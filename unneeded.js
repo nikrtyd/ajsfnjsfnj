@@ -16,3 +16,4 @@ function trere() {
   return [maxProfit, maxOfType1, maxOfType2];
 }
 console.log(trere());
+
