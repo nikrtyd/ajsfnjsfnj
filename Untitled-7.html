@@ -273,7 +273,7 @@
         plan1 = parseInt(document.querySelector('.input-plan1').value);
         plan2 = parseInt(document.querySelector('.input-plan2').value);
         document.querySelector('.interpret').style.visibility = 'visible';
-        document.querySelector('.interpret__function').innerHTML = `f(x) = ${matrix[1][0]}x₁ + ${matrix[1][1]}x₂ → <i>max</i>`;
+        document.querySelector('.interpret__function').innerHTML = `f(x) = ${matrix[0][1]}x₁ + ${matrix[1][1]}x₂ → <i>max</i>`;
         document.querySelector('.interpret__restrictions').innerHTML = `${matrix[0][0]}x₁ + ${matrix[1][0]}x₂ ≤ ${matrix[2][0]}<label>, при x₁ ≥ ${plan1}; x₂ ≥ ${plan2}</label>`;
         let results = GetProfit(matrix);
         document.querySelector('.interpret__calc').innerHTML = `x₁ = ${results[1]}<label> (шт.) - кол-во ёмкостей 1 типа</label><br>x₂ = ${results[2]}<label> (шт.) - кол-во ёмкостей 2 типа</label>`;
@@ -284,7 +284,7 @@
           return;
         }
         document.querySelector('.interpret__verification').innerHTML = `${matrix[0][0]} * ${results[1]} + ${matrix[1][0]} * ${results[2]} = ${matrix[0][0] * results[1] + matrix[1][0] * results[2]}` + (((matrix[0][0] * results[1] + matrix[1][0] * results[2]) <= matrix[2][0]) ? `<span class="good"> ≤ ${matrix[2][0]}</span>` : `<span class="bad">, больше ${matrix[2][0]}</span>`);
-        document.querySelector('.interpret__profit').innerHTML = `f(x) = ${matrix[1][0]} * ${results[1]} + ${matrix[1][1]} * ${results[2]} = ${matrix[1][0] * results[1] + matrix[1][1] * results[2]}<label> (тг.) - максимальная достижимая прибыль</label>`;
+        document.querySelector('.interpret__profit').innerHTML = `f(x) = ${matrix[0][1]} * ${results[1]} + ${matrix[1][1]} * ${results[2]} = ${matrix[0][1] * results[1] + matrix[1][1] * results[2]}<label> (тг.) - максимальная достижимая прибыль</label>`;
         mainTable.rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].innerText = results[0];
       }
 
@@ -293,7 +293,7 @@
         for (let type1count = plan1; type1count < 999; type1count++) {
           for (let type2count = plan2; type2count < 999; type2count++) {
             let steelSurplus = matrix[2][0] - (matrix[0][0] * type1count) - (matrix[1][0] * type2count);   // остаток стали
-            let newProfit = (type1count * matrix[1][0] + type2count * matrix[1][1]);
+            let newProfit = (type1count * matrix[0][1] + type2count * matrix[1][1]);
             if (steelSurplus < 0) continue; // остаток не может быть меньше 0
             if (newProfit > maxProfit) {
               maxProfit = newProfit;
