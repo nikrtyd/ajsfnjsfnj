@@ -38,6 +38,10 @@
       text-align: center;
     }
 
+    .hide {
+      display: none;
+    }
+
     td {
       vertical-align: middle;
       text-align: center;
@@ -58,7 +62,7 @@
       margin-left: 5px;
     }
 
-    .m-t-sm {
+    .m-t-small {
       margin-top: 5px;
     }
 
@@ -87,43 +91,13 @@
       border: 2px solid #111;
     }
 
-    .info {
-      padding-top: 48px;
-    }
-
-    .info::after {
-      content: 'Все значения в вычислениях округлены до ближайшего целого.';
-      font-size: 11px;
-      color: #888;
-    }
-
-    #restrictionSystem::before,
-    .restrictionSystem::before {
-      content: '{';
-      position: absolute;
-      margin-top: -10px;
-      margin-left: -24px;
-      font-size: 46px;
-      color: #ccc;
-    }
-
-    .step__desc {
-      color: #999;
-      font-size: 15px;
-    }
-
-    .lab {
-      color: #606060;
-      font-size: 16px;
-    }
-
     input {
       background: inherit;
       border: 2px solid #555;
       text-align: center;
       color: inherit;
       min-height: 30px;
-      /* max-width: calc(100% - 100px); */
+      max-width: 160px;
       font: inherit;
     }
 
@@ -140,6 +114,53 @@
     .bad {
       color: #f44336;
     }
+
+    label {
+      font-weight: bold;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .interpret {
+      visibility: collapse;
+    }
+
+    .interpret__function::before,
+    .interpret__restrictions::before,
+    .interpret__calc::before,
+    .interpret__verification::before,
+    .interpret__profit::before {
+      color: #555;
+      display: block;
+    }
+
+    .interpret__function::before {
+      content: 'Целевая функция:';
+    }
+
+    .interpret__restrictions::before {
+      content: 'Система ограничений:';
+    }
+
+    .interpret__calc::before {
+      content: 'Решение:';
+    }
+
+    .interpret__verification::before {
+      content: 'Проверка:';
+    }
+
+    .interpret__profit::before {
+      content: 'Подставляем значения в целевую функцию:';
+    }
+
+    .fs-i {
+      font-size: inherit;
+    }
+
+    .fw-b {
+      font-weight: bold;
+    }
   </style>
 
 </head>
@@ -149,62 +170,75 @@
   <main class="flex ai-c jc-c dir-col">
     <!-- Table container -->
     <div class="flex">
-      <!-- Expenses inputs -->
-      <div class="expenses">
-        <div class="flex jc-c dir-col">
-          <div class="flex dir-col m-t">
-            <label class="label">Длина заготовок 1 вида</label>
-            <input class="m-t-small input-exp1 input-cm" type="text" />
-          </div>
-          <div class="flex dir-col m-t">
-            <label class="label">Длина заготовок 2 вида</label>
-            <input class="m-t-small input-exp2 input-cm" type="text" />
-          </div>
-          <div class="flex dir-col m-t">
-            <label class="label">Всего см в одном прутке</label>
-            <input class="m-t-small input-expa input-cm" type="text" />
-          </div>
-        </div>
-      </div>
+      <!-- Table -->
+      <table cellspacing="0" cellpadding="0" border="1">
+        <tbody>
+          <tr>
+            <td>Вид ёмкости</td>
+            <td>Затраты cтали (м)</td>
+            <td>Прибыль (тг.)</td>
+          </tr>
+          <tr>
+            <td>Тип 1</td>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+          </tr>
+          <tr>
+            <td>Тип 2</td>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+          </tr>
+          <tr>
+            <td>Имеется</td>
+            <td contenteditable="true"></td>
+            <td class="fw-b"></td>
+          </tr>
+        </tbody>
+      </table>
       <!-- Production plan inputs -->
       <div class="m-l-large plan">
         <div class="flex ai-c jc-c dir-col">
           <div class="flex dir-col m-t">
-            <label class="label">План по заг. 1 вида</label>
-            <input class="m-t-small input-plan input-plan1" type="text" />
+            <label class="label">План по ёмкостям 1 типа</label>
+            <input class="m-t-small input-plan1" type="text" />
           </div>
           <div class="flex dir-col m-t">
-            <label class="label">План по заг. 2 вида</label>
-            <input class="m-t-small input-plan input-plan2" type="text" />
+            <label class="label">План по ёмкостям 2 типа</label>
+            <input class="m-t-small input-plan2" type="text" />
           </div>
         </div>
       </div>
     </div>
     <!-- Calculate button -->
     <div class="m-t jc-c">
-      <button onclick="outputAllTo(document.querySelector('.interpret'))" id="calculate">Рассчитать</button>
+      <button onclick="Run(GetMatrix(mainTable))" id="calculate">Рассчитать</button>
     </div>
     <!-- Interpretation -->
-    <section class="interpret m-t">
-
+    <section class="interpret m-t flex dir-col">
+      <div class="interpret__function m-t"></div>
+      <div class="interpret__restrictions m-t"></div>
+      <div class="interpret__calc m-t"></div>
+      <div class="interpret__verification m-t"></div>
+      <div class="interpret__profit m-t"></div>
     </section>
-    <!-- Info -->
-    <div class="info"></div>
-  </main>
-  <!-- SCRIPTS -->
-  <script>
-    let max25, max12, planned25, remainsFrom25, mx12From25Remains, planned12, made12from25rem, remaining12, fullTo12, result12, steps = 0,
-      plan25, plan12, cmInFull, length25, length12,
-      units = ["заг", "заг", "пр", "см", "заг", "пр", "заг", "заг", "пр", "пр"], allStrings = ["max25", "max12", "planned25", "remainsFrom25", "mx12From25Remains", "planned12", "made12from25rem", "remaining12", "fullTo12", "result12"];
+    <!-- SCRIPTS -->
+    <script>
+      // Задаём переменные, чтобы записывать туда наши действия
+      let mainTable = document.querySelector('table'),
+        plan1 = 0,
+        plan2 = 0;
 
-    document.querySelectorAll('.input-cm').forEach((element) => element.outerHTML = `<div>${element.outerHTML}<label class="label"> (см.)</label></div>`);
+      // numbers only for all cells in table
+      for (let i = 0; i < mainTable.rows.length; i++) {
+        for (let j = 0; j < mainTable.rows[i].cells.length; j++) {
+          mainTable.rows[i].cells[j].onkeydown = NumbersOnly;
+        }
+      }
 
-    document.querySelectorAll('.input-plan').forEach((element) => element.outerHTML = `<div>${element.outerHTML}<label class="label"> (заг.)</label></div>`);
+      // numbers only for all inputs
+      document.querySelectorAll('input').forEach((element) => element.onkeydown = NumbersOnly);
 
-    document.querySelectorAll('input').forEach((element) => allowNumbersOnly(element))
-
-    function allowNumbersOnly(inputEl) {
-      inputEl.onkeydown = function (e) {
+      function NumbersOnly(e) {
         if (!e) e = window.event;
         var keyCode = e.keyCode || e.which;
         if (!e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -214,81 +248,63 @@
           if (keyCode >= 96 && keyCode <= 105) {
             return true;
           }
-          if (keyCode == 8 || keyCode == 46) {
+          if (keyCode == 8 || keyCode == 46 || keyCode == 9) {
             return true;
           }
           return false;
         }
       }
-    }
 
-    function getVars() {
-      length25 = document.querySelector('.input-exp1').value;
-      length12 = document.querySelector('.input-exp2').value;
-      plan25 = document.querySelector('.input-plan1').value;
-      plan12 = document.querySelector('.input-plan2').value;
-      cmInFull = document.querySelector('.input-expa').value;
-    }
-
-    function calc() {
-      // Start of calculation
-      max25 = Math.floor(cmInFull / length25) // Макс. кол-во заготовок length25 см из одного прутка в cmInFull см:
-      max12 = Math.floor(cmInFull / length12) // Макс. кол-во заготовок length12 см из одного прутка в cmInFull см:
-      planned25 = Math.ceil(plan25 / max25) // Надо потратить целых прутков чтобы выполнить план по заготовкам length25 см:
-      remainsFrom25 = cmInFull - (max25 * length25) // Остаток в одном прутке от производства заготовок length25 см:
-      mx12From25Remains = Math.floor(remainsFrom25 / length12) // Макс. кол-во заготовок length12 см из остатка от length25 см (в одном прутке)
-      planned12 = Math.ceil(plan12 / max12) // Надо потратить прутков чтобы выполнить план по length12 см:
-      made12from25rem = planned25 * mx12From25Remains // Кол-во заготовок, сделанных из остатков от производства length25 см:
-      remaining12 = plan12 - planned25 // Кол-во заготовок length12 см, которые ещё осталось выполнить:
-      fullTo12 = Math.ceil(remaining12 / max12) // Кол-во целых прутков, которые будут потрачены на заготовки length12 см:
-      result12 = made12from25rem + fullTo12 // Общее кол-во прутков, чтобы сделать все заготовки length12 и length25 см:
-      // End of calculation
-    }
-
-    function outputStep(varToSearch) {
-      let eqChar = '=';
-      let codeWithDesc = document.body.innerHTML.split("// Start of calculation")[1].split("// End of calculation")[0].trim();
-      let calcCode = codeWithDesc.split(varToSearch)[1].split('// ')[0].replace(' = ', '');
-      let calcCodeDesc = codeWithDesc.split(varToSearch)[1].split('// ')[1].split('\n')[0];
-      if (calcCode.match('Math.round')
-        || calcCode.match('Math.ceil')
-        || calcCode.match('Math.floor')) {
-        calcCode = calcCode.replaceAll('Math.round(', '').replaceAll('Math.floor(', '').replaceAll('Math.ceil(', '').replaceAll(')', '');
-        eqChar = '≈'
+      // Получаем матрицу из таблицы
+      function GetMatrix(table) {
+        const matrix = [,];
+        // не берем в расчет левый и верхний края таблицы, отсюда начинается матрица: i (ряд) = 1; j (столб.) = 1
+        for (let i = 1; i < table.rows.length; i++) {
+          let rowData = [];
+          for (let j = 1; j < table.rows[i].cells.length; j++) {
+            rowData.push(parseFloat(table.rows[i].cells[j].innerText));
+          }
+          matrix[i - 1] = rowData;
+        }
+        return matrix;
       }
-      return `<div class="m-t-sm step${steps}"><span class="step__desc">${calcCodeDesc}</span><br>${calcCode}${eqChar} ${varToSearch}<span class="lab"> (${units[steps]}.)</span></div>`;
-    }
 
-    function outputAllTo(htmlEl) {
-      steps = 0;
-      getVars();
-      calc();
-      htmlEl.innerHTML = '';
-      for (steps = 0; steps < allStrings.length; steps++) {
-        htmlEl.innerHTML += outputStep(allStrings[steps]);
+      function Run(matrix) {
+        plan1 = parseInt(document.querySelector('.input-plan1').value);
+        plan2 = parseInt(document.querySelector('.input-plan2').value);
+        document.querySelector('.interpret').style.visibility = 'visible';
+        document.querySelector('.interpret__function').innerHTML = `f(x) = ${matrix[1][0]}x₁ + ${matrix[1][1]}x₂ → <i>max</i>`;
+        document.querySelector('.interpret__restrictions').innerHTML = `${matrix[0][0]}x₁ + ${matrix[1][0]}x₂ ≤ ${matrix[2][0]}<label>, при x₁ ≥ ${plan1}; x₂ ≥ ${plan2}</label>`;
+        let results = GetProfit(matrix);
+        document.querySelector('.interpret__calc').innerHTML = `x₁ = ${results[1]}<label> (шт.) - кол-во ёмкостей 1 типа</label><br>x₂ = ${results[2]}<label> (шт.) - кол-во ёмкостей 2 типа</label>`;
+        if (plan1 * matrix[0][0] + plan2 * matrix[1][0] > matrix[2][0]) {
+          document.querySelector('.interpret__verification').innerHTML = `<span class="bad fs-i">ПЛАН НЕДОСТИЖИМ!!! ВАМ НУЖНО ${plan1 * matrix[0][0] + plan2 * matrix[1][0]} М СТАЛИ, ЧТОБЫ ЕГО ВЫПОЛНИТЬ!</span>`;
+          document.querySelector('.interpret__profit').innerHTML = '';
+          mainTable.rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].innerText = 'НЕДОСТИЖИМО';
+          return;
+        }
+        document.querySelector('.interpret__verification').innerHTML = `${matrix[0][0]} * ${results[1]} + ${matrix[1][0]} * ${results[2]} = ${matrix[0][0] * results[1] + matrix[1][0] * results[2]}` + (((matrix[0][0] * results[1] + matrix[1][0] * results[2]) <= matrix[2][0]) ? `<span class="good"> ≤ ${matrix[2][0]}</span>` : `<span class="bad">, больше ${matrix[2][0]}</span>`);
+        document.querySelector('.interpret__profit').innerHTML = `f(x) = ${matrix[1][0]} * ${results[1]} + ${matrix[1][1]} * ${results[2]} = ${matrix[1][0] * results[1] + matrix[1][1] * results[2]}<label> (тг.) - максимальная достижимая прибыль</label>`;
+        mainTable.rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].innerText = results[0];
       }
-      interpolate();
-    }
 
-    // Interpolate all vars in html
-    function interpolate() {
-      document.querySelector('main').innerHTML = document.querySelector('main').innerHTML
-        .replaceAll("max25", max25)
-        .replaceAll("max12", max12)
-        .replaceAll("planned25", planned25)
-        .replaceAll("remainsFrom25", remainsFrom25)
-        .replaceAll("mx12From25Remains", mx12From25Remains)
-        .replaceAll("planned12", planned12)
-        .replaceAll("made12from25rem", made12from25rem)
-        .replaceAll("remaining12", remaining12)
-        .replaceAll("fullTo12", fullTo12)
-        .replaceAll("result12", result12)
-        .replaceAll("plan25", plan25)
-        .replaceAll("plan12", plan12)
-        .replaceAll("cmInFull", cmInFull)
-        .replaceAll("length25", length25)
-        .replaceAll("length12", length12);
-    }
-  </script>
+      function GetProfit(matrix) {
+        let maxProfit = 0, maxOfType1 = 0, maxOfType2 = 0;
+        for (let type1count = plan1; type1count < 999; type1count++) {
+          for (let type2count = plan2; type2count < 999; type2count++) {
+            let steelSurplus = matrix[2][0] - (matrix[0][0] * type1count) - (matrix[1][0] * type2count);   // остаток стали
+            let newProfit = (type1count * matrix[1][0] + type2count * matrix[1][1]);
+            if (steelSurplus < 0) continue; // остаток не может быть меньше 0
+            if (newProfit > maxProfit) {
+              maxProfit = newProfit;
+              maxOfType1 = type1count;
+              maxOfType2 = type2count;
+            }
+          }
+        }
+        return [maxProfit, maxOfType1, maxOfType2];
+      }
+    </script>
+</body>
 
 </html>

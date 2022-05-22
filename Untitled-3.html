@@ -38,10 +38,6 @@
       text-align: center;
     }
 
-    .hide {
-      /* display: none; */
-    }
-
     td {
       vertical-align: middle;
       text-align: center;
@@ -234,6 +230,7 @@
       cmInFull = document.querySelector('.input-expa').value;
     }
 
+    // Serves a double purpose. OutputStep function gets the internal code of this Calc function and then interpolates pre-calculated values into it. Also the comments are used in HTML to explain what is going on.
     function calc() {
       // Start of calculation
       max25 = Math.floor(cmInFull / length25) // Макс. кол-во заготовок length25 см из одного прутка в cmInFull см:
@@ -268,7 +265,7 @@
       getVars();
       calc();
       htmlEl.innerHTML = '';
-      for (steps = 0; steps < allStrings.length; steps++) {
+      for (; steps < allStrings.length; steps++) {
         htmlEl.innerHTML += outputStep(allStrings[steps]);
       }
       interpolate();
@@ -276,7 +273,7 @@
 
     // Interpolate all vars in html
     function interpolate() {
-      document.querySelector('main').innerHTML = document.querySelector('main').innerHTML
+      document.querySelector('.interpret').innerHTML = document.querySelector('.interpret').innerHTML
         .replaceAll("max25", max25)
         .replaceAll("max12", max12)
         .replaceAll("planned25", planned25)
