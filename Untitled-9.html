@@ -54,22 +54,6 @@
       color: #404040;
     }
 
-    .m-t {
-      margin-top: 30px;
-    }
-
-    .m-l {
-      margin-left: 5px;
-    }
-
-    .m-t-small {
-      margin-top: 5px;
-    }
-
-    .m-l-large {
-      margin-left: 30px;
-    }
-
     .m-0-auto {
       margin: 0 auto;
     }
@@ -170,86 +154,77 @@
       font-size: 70px;
       color: #5552;
     }
+
+    .door {
+      box-sizing: border-box;
+      border: 27px inset #a75;
+      height: calc(2 * 150px);
+      width: calc(1.4 * 150px);
+      border-bottom: none;
+    }
+
+    .gap {
+      gap: 20px;
+    }
   </style>
 
 </head>
 
 <body>
   <!-- MAIN CONTENT -->
-  <main class="flex ai-c jc-c dir-col">
-    <!-- Table container -->
-    <div class="flex">
-      <!-- Table -->
-      <table cellspacing="0" cellpadding="0" border="1">
-        <tbody>
-          <tr>
-            <td rowspan="2">Вид изделия</td>
-            <td colspan="3">Затраты (т)</td>
-            <td rowspan="2">Прибыль (тг.)</td>
-          </tr>
-          <tr>
-            <td>цемента</td>
-            <td>песка</td>
-            <td>щебня</td>
-          </tr>
-          <tr>
-            <td>Вид 1</td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-          </tr>
-          <tr>
-            <td>Вид 2</td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-          </tr>
-          <tr>
-            <td>Вид 3</td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-          </tr>
-          <tr>
-            <td>Должно поступить (сверх плана)</td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td class="fw-b"></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <!-- Calculate button -->
-    <div class="m-t jc-c">
-      <button onclick="Run(GetMatrix(mainTable))" id="calculate">Рассчитать</button>
-    </div>
-    <!-- Interpretation -->
-    <section class="interpret m-t flex dir-col">
-      <div class="interpret__function m-t"></div>
-      <div class="interpret__restrictions m-t">
-        <div class="system"></div>
+  <main class="flex ai-c jc-c gap dir-col">
+    <div class="flex gap">
+      <div class="door"></div>
+      <!-- Inputs container -->
+      <div class="inputs dir-col flex gap">
+        <div class="flex dir-col ">
+          <label class="label">Ширина рамы (м)</label>
+          <input class="inputs__input--width" type="text">
+        </div>
+        <div class="flex dir-col ">
+          <label class="label">Высота рамы (м)</label>
+          <input class="inputs__input--height" type="text">
+        </div>
+        <div class="flex dir-col ">
+          <label class="label">Кол-во рам (шт.)</label>
+          <input class="inputs__input--count" type="text">
+        </div>
+        <div class="flex dir-col ">
+          <label class="label">Длина доски (м)</label>
+          <input class="inputs__input--length" type="text">
+        </div>
       </div>
-      <div class="interpret__calc m-t"></div>
-      <div class="interpret__verification m-t"></div>
-      <div class="interpret__profit m-t"></div>
-    </section>
+    </div>
+    <!-- Calculate and Interpretation container -->
+    <div class="flex dir-col gap">
+      <!-- Calculate button -->
+      <div class="flex jc-c">
+        <button onclick="Run(GetMatrix(mainTable))" id="calculate">Рассчитать</button>
+      </div>
+      <!-- Interpretation -->
+      <section class="interpret gap flex dir-col">
+        <div class="interpret__function "></div>
+        <div class="interpret__restrictions ">
+          <div class="system"></div>
+        </div>
+        <div class="interpret__calc "></div>
+        <div class="interpret__verification "></div>
+        <div class="interpret__profit "></div>
+      </section>
+    </div>
     <!-- SCRIPTS -->
     <script>
       // Задаём переменные, чтобы записывать туда наши действия
-      let mainTable = document.querySelector('table'),
-        min1 = 0,
-        min2 = 0;
+      // let mainTable = document.querySelector('table'),
+      //   min1 = 0,
+      //   min2 = 0;
 
       // numbers only for all cells in table
-      for (let i = 0; i < mainTable.rows.length; i++) {
-        for (let j = 0; j < mainTable.rows[i].cells.length; j++) {
-          mainTable.rows[i].cells[j].onkeydown = NumbersOnly;
-        }
-      }
+      // for (let i = 0; i < mainTable.rows.length; i++) {
+      //   for (let j = 0; j < mainTable.rows[i].cells.length; j++) {
+      //     mainTable.rows[i].cells[j].onkeydown = NumbersOnly;
+      //   }
+      // }
 
       // numbers only for all inputs
       document.querySelectorAll('input').forEach((element) => element.onkeydown = NumbersOnly);
