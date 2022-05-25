@@ -8,11 +8,23 @@
   <title>Document</title>
   <!-- STYLE -->
   <style>
+    :root {
+      --body-background: #ddd;
+      --body-foreground: #111;
+      --body-background-locked: #d9d9d9;
+      --body-foreground-locked: #404040;
+      --button-background: #bbb;
+      --button-background-active: #ccc;
+      --button-border: #555;
+      --system-before: #5552;
+      --good: #4caf50;
+      --bad: #f44336;
+    }
     body,
     main {
       margin: 0;
-      background: #ddd;
-      color: #111;
+      background: var(--body-background);
+      color: var(--body-foreground);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       font-size: 18px;
       height: 100vh;
@@ -50,8 +62,8 @@
     }
 
     td:not([contenteditable]) {
-      background: #d9d9d9;
-      color: #404040;
+      background: var(--body-background)-locked;
+      color: var(--body-foreground)-locked;
     }
 
     .m-t {
@@ -80,15 +92,15 @@
 
     button {
       padding: 10px 20px;
-      background: #bbb;
-      color: #111;
-      border: 2px solid #555;
+      background: var(--button-background);
+      color: var(--body-foreground);
+      border: 2px solid var(--button-border);
       font: inherit;
     }
 
     button:active {
-      background: #ccc;
-      border: 2px solid #111;
+      background: var(--button-background)-active;
+      border: 2px solid var(--body-foreground);
     }
 
     .info {
@@ -108,7 +120,7 @@
       margin-top: -10px;
       margin-left: -24px;
       font-size: 46px;
-      color: #ccc;
+      color: var(--button-background)-active;
     }
 
     .label {
@@ -117,7 +129,7 @@
     }
 
     .plan .label {
-      color: #404040;
+      color: var(--body-foreground)-locked;
     }
 
     .result-sect>.label {
@@ -131,7 +143,7 @@
 
     input {
       background: inherit;
-      border: 2px solid #555;
+      border: 2px solid var(--button-border);
       text-align: center;
       color: inherit;
       min-height: 30px;
@@ -139,18 +151,18 @@
       font: inherit;
     }
 
-    .good,
+    .good
     .bad {
       font-weight: bold;
       font-size: 14px;
     }
 
     .good {
-      color: #4caf50;
+      color: var(--good);
     }
 
     .bad {
-      color: #f44336;
+      color: var(--bad);
     }
   </style>
 
@@ -482,9 +494,9 @@
         for (let i = 0; i < matrix.length - 1; i++) {
           let restriction = `${matrix[0][i]} * ${x1} + ${matrix[1][i]} * ${x2} = <b>${matrix[0][i] * x1} + ${matrix[1][i] * x2} = ${matrix[0][i] * x1 + matrix[1][i] * x2}</b>`;
           if (matrix[0][i] * x1 + matrix[1][i] * x2 <= matrix[2][i])
-            output += `${restriction}<span class="good"> ≤ ${matrix[2][i]}</span><span class="label"> – кол-во затраченной ${crap[i]}</span><br>`
+            output += `${restriction}<span class="var(--good)"> ≤ ${matrix[2][i]}</span><span class="label"> – кол-во затраченной ${crap[i]}</span><br>`
           else {
-            output += `${restriction}<span class="bad"> больше ${matrix[2][i]}</span><span class="label"> – кол-во затраченной ${crap[i]}</span><br>`;
+            output += `${restriction}<span class="var(--bad)"> больше ${matrix[2][i]}</span><span class="label"> – кол-во затраченной ${crap[i]}</span><br>`;
             error = true;
             if (confirm('Возникла ошибка. Показать решение?')) error = false;
           };

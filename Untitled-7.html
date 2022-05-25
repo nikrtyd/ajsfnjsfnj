@@ -11,8 +11,8 @@
     body,
     main {
       margin: 0;
-      background: #ddd;
-      color: #111;
+      background: var(--body-background);
+      color: var(--body-foreground);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       font-size: 18px;
       height: 100vh;
@@ -50,8 +50,8 @@
     }
 
     td:not([contenteditable]) {
-      background: #d9d9d9;
-      color: #404040;
+      background: var(--body-background)-locked;
+      color: var(--body-foreground)-locked;
     }
 
     .m-t {
@@ -80,20 +80,20 @@
 
     button {
       padding: 10px 20px;
-      background: #bbb;
-      color: #111;
-      border: 2px solid #555;
+      background: var(--button-background);
+      color: var(--body-foreground);
+      border: 2px solid var(--button-border);
       font: inherit;
     }
 
     button:active {
-      background: #ccc;
-      border: 2px solid #111;
+      background: var(--button-background)-active;
+      border: 2px solid var(--body-foreground);
     }
 
     input {
       background: inherit;
-      border: 2px solid #555;
+      border: 2px solid var(--button-border);
       text-align: center;
       color: inherit;
       min-height: 30px;
@@ -108,49 +108,49 @@
     }
 
     .good {
-      color: #4caf50;
+      color: var(--good);
     }
 
-    .bad {
-      color: #f44336;
+    .bad{
+      color: var(--bad);
     }
 
     label {
       font-weight: bold;
       font-size: 14px;
-      color: #555;
+      color: var(--button-border);
     }
 
-    .interpret {
+    .intt {
       visibility: collapse;
     }
 
-    .interpret__function::before,
-    .interpret__restrictions::before,
-    .interpret__calc::before,
-    .interpret__verification::before,
-    .interpret__profit::before {
-      color: #555;
+    .intt__function::before,
+    .intt__restr::before,
+    .intt__calc::before,
+    .intt__ver::before,
+    .intt__profit::before {
+      color: var(--button-border);
       display: block;
     }
 
-    .interpret__function::before {
+    .intt__function::before {
       content: 'Целевая функция:';
     }
 
-    .interpret__restrictions::before {
+    .intt__restr::before {
       content: 'Система ограничений:';
     }
 
-    .interpret__calc::before {
+    .intt__calc::before {
       content: 'Решение:';
     }
 
-    .interpret__verification::before {
+    .intt__ver::before {
       content: 'Проверка:';
     }
 
-    .interpret__profit::before {
+    .intt__profit::before {
       content: 'Подставляем значения в целевую функцию:';
     }
 
@@ -211,34 +211,34 @@
     </div>
     <!-- Calculate button -->
     <div class="m-t jc-c">
-      <button onclick="Run(GetMatrix(mainTable))" id="calculate">Рассчитать</button>
+      <button onclick="get(newm(mainTable))" id="calculate">Рассчитать</button>
     </div>
-    <!-- Interpretation -->
-    <section class="interpret m-t flex dir-col">
-      <div class="interpret__function m-t"></div>
-      <div class="interpret__restrictions m-t"></div>
-      <div class="interpret__calc m-t"></div>
-      <div class="interpret__verification m-t"></div>
-      <div class="interpret__profit m-t"></div>
+    <!-- inttation -->
+    <section class="intt m-t flex dir-col">
+      <div class="intt__function m-t"></div>
+      <div class="intt__restr m-t"></div>
+      <div class="intt__calc m-t"></div>
+      <div class="intt__ver m-t"></div>
+      <div class="intt__profit m-t"></div>
     </section>
     <!-- SCRIPTS -->
     <script>
       // Задаём переменные, чтобы записывать туда наши действия
       let mainTable = document.querySelector('table'),
-        plan1 = 0,
-        plan2 = 0;
+        p1 = 0,
+        p2 = 0;
 
       // numbers only for all cells in table
       for (let i = 0; i < mainTable.rows.length; i++) {
         for (let j = 0; j < mainTable.rows[i].cells.length; j++) {
-          mainTable.rows[i].cells[j].onkeydown = NumbersOnly;
+          mainTable.rows[i].cells[j].onkeydown = nums;
         }
       }
 
       // numbers only for all inputs
-      document.querySelectorAll('input').forEach((element) => element.onkeydown = NumbersOnly);
+      document.querySelectorAll('input').forEach((element) => element.onkeydown = nums);
 
-      function NumbersOnly(e) {
+      function nums(e) {
         if (!e) e = window.event;
         var keyCode = e.keyCode || e.which;
         if (!e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -255,10 +255,8 @@
         }
       }
 
-      // Получаем матрицу из таблицы
-      function GetMatrix(table) {
+      function newm(table) {
         const matrix = [,];
-        // не берем в расчет левый и верхний края таблицы, отсюда начинается матрица: i (ряд) = 1; j (столб.) = 1
         for (let i = 1; i < table.rows.length; i++) {
           let rowData = [];
           for (let j = 1; j < table.rows[i].cells.length; j++) {
@@ -269,36 +267,36 @@
         return matrix;
       }
 
-      function Run(matrix) {
-        plan1 = parseInt(document.querySelector('.input-plan1').value);
-        plan2 = parseInt(document.querySelector('.input-plan2').value);
-        document.querySelector('.interpret').style.visibility = 'visible';
-        document.querySelector('.interpret__function').innerHTML = `f(x) = ${matrix[0][1]}x₁ + ${matrix[1][1]}x₂ → <i>max</i>`;
-        document.querySelector('.interpret__restrictions').innerHTML = `${matrix[0][0]}x₁ + ${matrix[1][0]}x₂ ≤ ${matrix[2][0]}<label>, при x₁ ≥ ${plan1}; x₂ ≥ ${plan2}</label>`;
-        let results = GetProfit(matrix);
-        document.querySelector('.interpret__calc').innerHTML = `x₁ = ${results[1]}<label> (шт.) - кол-во ёмкостей 1 типа</label><br>x₂ = ${results[2]}<label> (шт.) - кол-во ёмкостей 2 типа</label>`;
-        if (plan1 * matrix[0][0] + plan2 * matrix[1][0] > matrix[2][0]) {
-          document.querySelector('.interpret__verification').innerHTML = `<span class="bad fs-i">ПЛАН НЕДОСТИЖИМ!!! ВАМ НУЖНО ${plan1 * matrix[0][0] + plan2 * matrix[1][0]} М СТАЛИ, ЧТОБЫ ЕГО ВЫПОЛНИТЬ!</span>`;
-          document.querySelector('.interpret__profit').innerHTML = '';
+      function get(m) {
+        p1 = parseInt(document.querySelector('.input-plan1').value);
+        p2 = parseInt(document.querySelector('.input-plan2').value);
+        document.querySelector('.intt').style.visibility = 'visible';
+        document.querySelector('.intt__function').innerHTML = `f(x) = ${m[0][1]}x₁ + ${m[1][1]}x₂ → <i>max</i>`;
+        document.querySelector('.intt__restr').innerHTML = `${m[0][0]}x₁ + ${m[1][0]}x₂ ≤ ${m[2][0]}<label>, при x₁ ≥ ${p1}; x₂ ≥ ${p2}</label>`;
+        let results = prof(m);
+        document.querySelector('.intt__calc').innerHTML = `x₁ = ${results[1]}<label> (шт.) - кол-во ёмкостей 1 типа</label><br>x₂ = ${results[2]}<label> (шт.) - кол-во ёмкостей 2 типа</label>`;
+        if (p1 * m[0][0] + p2 * m[1][0] > m[2][0]) {
+          document.querySelector('.intt__ver').innerHTML = `<span class="var(--bad) fs-i">ПЛАН НЕДОСТИЖИМ!!! ВАМ НУЖНО ${p1 * m[0][0] + p2 * m[1][0]} М СТАЛИ, ЧТОБЫ ЕГО ВЫПОЛНИТЬ!</span>`;
+          document.querySelector('.intt__profit').innerHTML = '';
           mainTable.rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].innerText = 'НЕДОСТИЖИМО';
           return;
         }
-        document.querySelector('.interpret__verification').innerHTML = `${matrix[0][0]} * ${results[1]} + ${matrix[1][0]} * ${results[2]} = ${matrix[0][0] * results[1] + matrix[1][0] * results[2]}` + (((matrix[0][0] * results[1] + matrix[1][0] * results[2]) <= matrix[2][0]) ? `<span class="good"> ≤ ${matrix[2][0]}</span>` : `<span class="bad">, больше ${matrix[2][0]}</span>`);
-        document.querySelector('.interpret__profit').innerHTML = `f(x) = ${matrix[0][1]} * ${results[1]} + ${matrix[1][1]} * ${results[2]} = ${matrix[0][1] * results[1] + matrix[1][1] * results[2]}<label> (тг.) - максимальная достижимая прибыль</label>`;
+        document.querySelector('.intt__ver').innerHTML = `${m[0][0]} * ${results[1]} + ${m[1][0]} * ${results[2]} = ${m[0][0] * results[1] + m[1][0] * results[2]}` + (((m[0][0] * results[1] + m[1][0] * results[2]) <= m[2][0]) ? `<span class="var(--good)"> ≤ ${m[2][0]}</span>` : `<span class="var(--bad)">, больше ${m[2][0]}</span>`);
+        document.querySelector('.intt__profit').innerHTML = `f(x) = ${m[0][1]} * ${results[1]} + ${m[1][1]} * ${results[2]} = ${m[0][1] * results[1] + m[1][1] * results[2]}<label> (тг.) - максимальная достижимая прибыль</label>`;
         mainTable.rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].innerText = results[0];
       }
 
-      function GetProfit(matrix) {
+      function prof(m) {
         let maxProfit = 0, maxOfType1 = 0, maxOfType2 = 0;
-        for (let type1count = plan1; type1count < 999; type1count++) {
-          for (let type2count = plan2; type2count < 999; type2count++) {
-            let steelSurplus = matrix[2][0] - (matrix[0][0] * type1count) - (matrix[1][0] * type2count);   // остаток стали
-            let newProfit = (type1count * matrix[0][1] + type2count * matrix[1][1]);
+        for (let t1c = p1; t1c < 999; t1c++) {
+          for (let t2c = p2; t2c < 999; t2c++) {
+            let steelSurplus = m[2][0] - (m[0][0] * t1c) - (m[1][0] * t2c);   // остаток стали
+            let newProfit = (t1c * m[0][1] + t2c * m[1][1]);
             if (steelSurplus < 0) continue; // остаток не может быть меньше 0
             if (newProfit > maxProfit) {
               maxProfit = newProfit;
-              maxOfType1 = type1count;
-              maxOfType2 = type2count;
+              maxOfType1 = t1c;
+              maxOfType2 = t2c;
             }
           }
         }
