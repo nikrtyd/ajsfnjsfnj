@@ -5,15 +5,32 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Задача 7</title>
   <!-- STYLE -->
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap');
+
+    :root {
+      --body-background: #114;
+      --body-foreground: #eee;
+      --body-background-locked: #225;
+      --body-foreground-locked: #ddd;
+      --button-background: #336;
+      --button-background-active: #225;
+      --button-border: #ccc;
+      --system-before: #ccc2;
+      --label: #66a;
+      --good: #4caf50;
+      --bad: #f44336;
+      --border-radius: 20px;
+    }
+
     body,
     main {
       margin: 0;
       background: var(--body-background);
       color: var(--body-foreground);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Source Sans Pro', Geneva, Verdana, sans-serif;
       font-size: 18px;
       height: 100vh;
     }
@@ -50,8 +67,8 @@
     }
 
     td:not([contenteditable]) {
-      background: var(--body-background)-locked;
-      color: var(--body-foreground)-locked;
+      background: var(--body-background-locked);
+      color: var(--body-foreground-locked);
     }
 
     .m-t {
@@ -78,22 +95,26 @@
       width: 100vw;
     }
 
+    table,input[type=text] {
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid #99f;
+    }
     button {
       padding: 10px 20px;
-      background: var(--button-background);
-      color: var(--body-foreground);
-      border: 2px solid var(--button-border);
+      background: #77d;
+      border-radius: 20px;
       font: inherit;
+      border: none;
     }
 
     button:active {
-      background: var(--button-background)-active;
-      border: 2px solid var(--body-foreground);
+      background: #44a;
     }
 
     input {
       background: inherit;
-      border: 2px solid var(--button-border);
+      border: 2px solid var(--input-border);
       text-align: center;
       color: inherit;
       min-height: 30px;
@@ -111,7 +132,7 @@
       color: var(--good);
     }
 
-    .bad{
+    .bad {
       color: var(--bad);
     }
 
