@@ -95,11 +95,13 @@
       width: 100vw;
     }
 
-    table,input[type=text] {
+    table,
+    input[type=text] {
       border-radius: 20px;
       overflow: hidden;
       border: 1px solid #99f;
     }
+
     button {
       padding: 10px 20px;
       background: #77d;
@@ -245,9 +247,16 @@
     <!-- SCRIPTS -->
     <script>
       // Задаём переменные, чтобы записывать туда наши действия
-      let mainTable = document.querySelector('table'),
+      let mainTable = elem('table'),
         p1 = 0,
         p2 = 0;
+
+      function elem(name) {
+        return document.querySelector(name);
+      }
+      function elems(name) {
+        return document.querySelectorAll(name);
+      }
 
       // numbers only for all cells in table
       for (let i = 0; i < mainTable.rows.length; i++) {
@@ -257,7 +266,7 @@
       }
 
       // numbers only for all inputs
-      document.querySelectorAll('input').forEach((element) => element.onkeydown = nums);
+      elems('input').forEach((element) => element.onkeydown = nums);
 
       function nums(e) {
         if (!e) e = window.event;
@@ -276,16 +285,16 @@
         }
       }
 
-      function newm(table) {
-        const matrix = [,];
-        for (let i = 1; i < table.rows.length; i++) {
+      function newm(t) {
+        const m = [,];
+        for (let i = 1; i < t.rows.length; i++) {
           let rowData = [];
-          for (let j = 1; j < table.rows[i].cells.length; j++) {
-            rowData.push(parseFloat(table.rows[i].cells[j].innerText));
+          for (let j = 1; j < t.rows[i].cells.length; j++) {
+            rowData.push(parseFloat(t.rows[i].cells[j].innerText));
           }
-          matrix[i - 1] = rowData;
+          m[i - 1] = rowData;
         }
-        return matrix;
+        return m;
       }
 
       function get(m) {

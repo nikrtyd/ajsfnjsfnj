@@ -141,36 +141,36 @@
       color: var(--button-border);
     }
 
-    .interpret {
+    .intt {
       visibility: collapse;
     }
 
-    .interpret__function::before,
-    .interpret__restrictions::before,
-    .interpret__calc::before,
-    .interpret__verification::before,
-    .interpret__profit::before {
+    .intt__function::before,
+    .intt__restr::before,
+    .intt__calc::before,
+    .intt__ver::before,
+    .intt__profit::before {
       color: var(--button-border);
       display: block;
     }
 
-    .interpret__function::before {
+    .intt__function::before {
       content: 'Целевая функция:';
     }
 
-    .interpret__restrictions::before {
+    .intt__restr::before {
       content: 'Система ограничений:';
     }
 
-    .interpret__calc::before {
+    .intt__calc::before {
       content: 'Решение:';
     }
 
-    .interpret__verification::before {
+    .intt__ver::before {
       content: 'Проверка:';
     }
 
-    .interpret__profit::before {
+    .intt__profit::before {
       content: 'Подставляем значения в целевую функцию:';
     }
 
@@ -245,36 +245,44 @@
     </div>
     <!-- Calculate button -->
     <div class="m-t jc-c">
-      <button onclick="Run(GetMatrix(mainTable))" id="calculate">Рассчитать</button>
+      <button onclick="run(newm(mainTable))" id="calculate">Рассчитать</button>
     </div>
-    <!-- Interpretation -->
-    <section class="interpret m-t flex dir-col">
-      <div class="interpret__function m-t"></div>
-      <div class="interpret__restrictions m-t">
+    <!-- inttation -->
+    <section class="intt m-t flex dir-col">
+      <div class="intt__function m-t"></div>
+      <div class="intt__restr m-t">
         <div class="system"></div>
       </div>
-      <div class="interpret__calc m-t"></div>
-      <div class="interpret__verification m-t"></div>
-      <div class="interpret__profit m-t"></div>
+      <div class="intt__calc m-t"></div>
+      <div class="intt__ver m-t"></div>
+      <div class="intt__profit m-t"></div>
     </section>
     <!-- SCRIPTS -->
     <script>
       // Задаём переменные, чтобы записывать туда наши действия
-      let mainTable = document.querySelector('table'),
+      let mainTable = elem('table'),
         min1 = 0,
         min2 = 0;
+
+        
+      function elem(name) {
+        return document.querySelector(name);
+      }
+      function elems(name) {
+        return document.querySelectorAll(name);
+      }
 
       // numbers only for all cells in table
       for (let i = 0; i < mainTable.rows.length; i++) {
         for (let j = 0; j < mainTable.rows[i].cells.length; j++) {
-          mainTable.rows[i].cells[j].onkeydown = NumbersOnly;
+          mainTable.rows[i].cells[j].onkeydown = nums;
         }
       }
 
       // numbers only for all inputs
-      document.querySelectorAll('input').forEach((element) => element.onkeydown = NumbersOnly);
+      elems('input').forEach((element) => element.onkeydown = nums);
 
-      function NumbersOnly(e) {
+      function nums(e) {
         if (!e) e = window.event;
         var keyCode = e.keyCode || e.which;
         if (!e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -292,69 +300,69 @@
       }
 
       // Получаем матрицу из таблицы
-      function GetMatrix(table) {
-        const matrix = [,];
+      function newm(t) {
+        const m = [,];
         // не берем в расчет левый и верхний края таблицы, отсюда начинается матрица: i (ряд) = 2; j (столб.) = 1
-        for (let i = 2; i < table.rows.length; i++) {
+        for (let i = 2; i < t.rows.length; i++) {
           let rowData = [];
-          for (let j = 1; j < table.rows[i].cells.length; j++) {
-            let cell = table.rows[i].cells[j];
-            ValidateInput(cell);
-            rowData.push(parseFloat(table.rows[i].cells[j].innerText));
+          for (let j = 1; j < t.rows[i].cells.length; j++) {
+            let cell = t.rows[i].cells[j];
+            vali(cell);
+            rowData.push(parseFloat(t.rows[i].cells[j].innerText));
           }
-          matrix[i - 2] = rowData;
+          m[i - 2] = rowData;
         }
-        return matrix;
+        return m;
       }
 
       // если нет данных, то присваиваем нулю
-      function ValidateInput(element) {
-        if (!(element.innerText.match(/\d/)))
-          element.innerText = 0;
+      function vali(el) {
+        if (!(el.innerText.match(/\d/)))
+          el.innerText = 0;
       }
 
-      function Run(m) {
+      function run(m) {
         min1 = 20;
         min2 = 20;
         min3 = 20;
-        document.querySelector('.interpret').style.visibility = 'visible';
-        document.querySelector('.interpret__function').innerHTML = `f(x) = ${m[0][3]}x₁ + ${m[1][3]}x₂ + ${m[2][3]}x₃ → <i>max</i>`;
-        document.querySelector('.interpret__restrictions>.system').innerHTML = `${m[0][0]}x₁ + ${m[1][0]}x₂ + ${m[2][0]}x₃ ≤ ${m[3][0]}<br>${m[0][1]}x₁ + ${m[1][1]}x₂ + ${m[2][1]}x₃ ≤ ${m[3][1]}<br>${m[0][2]}x₁ + ${m[1][2]}x₂ + ${m[2][2]}x₃ ≤ ${m[3][2]}`; // <label>, при x₁ ≥ ${min1}; x₂ ≥ ${min2}; x₃ ≥ ${min3}</label>
-        let r = GetProfit(m);
-        document.querySelector('.interpret__calc').innerHTML = `x₁ = ${r[1]}<label> (шт.) - кол-во изделий 1 вида</label><br>x₂ = ${r[2]}<label> (шт.) - кол-во изделий 2 вида</label><br>x₃ = ${r[3]}<label> (шт.) - кол-во изделий 3 вида</label>`;
+        elem('.intt').style.visibility = 'visible';
+        elem('.intt__function').innerHTML = `f(x) = ${m[0][3]}x₁ + ${m[1][3]}x₂ + ${m[2][3]}x₃ → <i>max</i>`;
+        elem('.intt__restr>.system').innerHTML = `${m[0][0]}x₁ + ${m[1][0]}x₂ + ${m[2][0]}x₃ ≤ ${m[3][0]}<br>${m[0][1]}x₁ + ${m[1][1]}x₂ + ${m[2][1]}x₃ ≤ ${m[3][1]}<br>${m[0][2]}x₁ + ${m[1][2]}x₂ + ${m[2][2]}x₃ ≤ ${m[3][2]}`; // <label>, при x₁ ≥ ${min1}; x₂ ≥ ${min2}; x₃ ≥ ${min3}</label>
+        let r = prof(m);
+        elem('.intt__calc').innerHTML = `x₁ = ${r[1]}<label> (шт.) - кол-во изделий 1 вида</label><br>x₂ = ${r[2]}<label> (шт.) - кол-во изделий 2 вида</label><br>x₃ = ${r[3]}<label> (шт.) - кол-во изделий 3 вида</label>`;
         if (min1 * m[0][0] + min2 * m[1][0] + min3 * m[2][0] > m[3][0]) {
-          document.querySelector('.interpret__verification').innerHTML = `<span class="var(--bad) fs-i">ПЛАН НЕДОСТИЖИМ!!! ВАМ НУЖНО ${min1 * m[0][0] + min2 * m[1][0]} М СТАЛИ, ЧТОБЫ ЕГО ВЫПОЛНИТЬ!</span>`;
-          document.querySelector('.interpret__profit').innerHTML = '';
+          elem('.intt__ver').innerHTML = `<span class="var(--bad) fs-i">ПЛАН НЕДОСТИЖИМ!!! ВАМ НУЖНО ${min1 * m[0][0] + min2 * m[1][0]} М СТАЛИ, ЧТОБЫ ЕГО ВЫПОЛНИТЬ!</span>`;
+          elem('.intt__profit').innerHTML = '';
           mainTable.rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].innerText = 'НЕДОСТИЖИМО';
           return;
         }
-        document.querySelector('.interpret__verification').innerHTML = `<div class="system">${m[0][0]} * ${r[1]} + ${m[1][0]} * ${r[2]} + ${m[2][0]} * ${r[3]} = ${m[0][0] * r[1] + m[1][0] * r[2] + m[2][0] * r[3]}` + (((m[0][0] * r[1] + m[1][0] * r[2]) <= m[3][0]) ? `<span class="var(--good)"> ≤ ${m[3][0]}</span>` : `<span class="var(--bad)">, больше ${m[3][0]}</span>`)
+        elem('.intt__ver').innerHTML = `<div class="system">${m[0][0]} * ${r[1]} + ${m[1][0]} * ${r[2]} + ${m[2][0]} * ${r[3]} = ${m[0][0] * r[1] + m[1][0] * r[2] + m[2][0] * r[3]}` + (((m[0][0] * r[1] + m[1][0] * r[2]) <= m[3][0]) ? `<span class="var(--good)"> ≤ ${m[3][0]}</span>` : `<span class="var(--bad)">, больше ${m[3][0]}</span>`)
           + `<br>${m[0][1]} * ${r[1]} + ${m[1][1]} * ${r[2]} + ${m[2][1]} * ${r[3]} = ${m[0][1] * r[1] + m[1][1] * r[2] + m[2][1] * r[3]}` + (((m[0][1] * r[1] + m[1][1] * r[2] + m[2][1] * r[3]) <= m[3][1]) ? `<span class="var(--good)"> ≤ ${m[3][1]}</span>` : `<span class="var(--bad)">, больше ${m[3][1]}</span>`)
           + `<br>${m[0][2]} * ${r[1]} + ${m[1][2]} * ${r[2]} + ${m[2][2]} * ${r[3]} = ${m[0][2] * r[1] + m[1][2] * r[2] + m[2][2] * r[3]}` + (((m[0][2] * r[1] + m[1][2] * r[2] + m[2][2] * r[3]) <= m[3][2]) ? `<span class="var(--good)"> ≤ ${m[3][2]}</span>` : `<span class="var(--bad)">, больше ${m[3][2]}</span>`) + '</div>';
-        document.querySelector('.interpret__profit').innerHTML = `f(x) = ${m[0][3]} * ${r[1]} + ${m[1][3]} * ${r[2]} + ${m[2][3]} * ${r[3]} = ${m[0][3] * r[1] + m[1][3] * r[2] + m[2][3] * r[3]}<label> (тг.) - максимальная достижимая прибыль</label>`;
+        elem('.intt__profit').innerHTML = `f(x) = ${m[0][3]} * ${r[1]} + ${m[1][3]} * ${r[2]} + ${m[2][3]} * ${r[3]} = ${m[0][3] * r[1] + m[1][3] * r[2] + m[2][3] * r[3]}<label> (тг.) - максимальная достижимая прибыль</label>`;
         mainTable.rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].innerText = r[0];
       }
 
-      function GetProfit(m) {
-        let maxProfit = 0, maxOfType1 = 0, maxOfType2 = 0, maxOfType3 = 0;
+      function prof(m) {
+        let maxp = 0, mx1 = 0, mx2 = 0, mx3 = 0;
         for (let t1c = 20; t1c < 400; t1c++) {
           for (let t3c = 20; t3c < 400; t3c++) {
             for (let t2c = 20; t2c < 400; t2c++) {
-              let cementSurplus = m[3][0] - (m[0][0] * t1c) - (m[1][0] * t2c) - (m[2][0] * t3c);   // остаток цемента
-              let sandSurplus = m[3][1] - (m[0][1] * t1c) - (m[1][1] * t2c) - (m[2][1] * t3c);   // остаток песка
-              let rubbleSurplus = m[3][2] - (m[0][2] * t1c) - (m[1][2] * t2c) - (m[2][2] * t3c);   // остаток щебня
-              let newProfit = (t1c * m[0][3] + t2c * m[1][3] + t3c * m[2][3]);
-              if (cementSurplus < 0 || sandSurplus < 0 || rubbleSurplus < 0) continue; // остаток не может быть меньше 0
-              if (newProfit > maxProfit) {
-                maxProfit = newProfit;
-                maxOfType1 = t1c;
-                maxOfType2 = t2c;
-                maxOfType3 = t3c;
+              let csp = m[3][0] - (m[0][0] * t1c) - (m[1][0] * t2c) - (m[2][0] * t3c);   // остаток цемента
+              let ssp = m[3][1] - (m[0][1] * t1c) - (m[1][1] * t2c) - (m[2][1] * t3c);   // остаток песка
+              let rsp = m[3][2] - (m[0][2] * t1c) - (m[1][2] * t2c) - (m[2][2] * t3c);   // остаток щебня
+              let newp = (t1c * m[0][3] + t2c * m[1][3] + t3c * m[2][3]);
+              if (csp < 0 || ssp < 0 || rsp < 0) continue; // остаток не может быть меньше 0
+              if (newp > maxp) {
+                maxp = newp;
+                mx1 = t1c;
+                mx2 = t2c;
+                mx3 = t3c;
               }
             }
           }
         }
-        return [maxProfit, maxOfType1, maxOfType2, maxOfType3];
+        return [maxp, mx1, mx2, mx3];
       }
 
       // remove this
@@ -366,11 +374,11 @@
       let lol = 0;
       for (let rowI = 2; rowI < mainTable.rows.length; rowI++) {
         for (let cellI = 1; cellI < mainTable.rows[rowI].cells.length; cellI++) {
-          document.querySelector('table').rows[rowI].cells[cellI].innerText = suka[lol];
+          elem('table').rows[rowI].cells[cellI].innerText = suka[lol];
           lol++;
         }
       }
-      Run(GetMatrix(mainTable));
+      run(newm(mainTable));
 
 // f(x) = 20x1 + 40x2 + 38x3 -> max
   // 2x1 + 3x2 + 2x3 <= 800

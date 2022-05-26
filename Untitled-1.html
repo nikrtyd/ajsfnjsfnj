@@ -80,7 +80,8 @@
       margin-left: 5px;
     }
 
-    table,input[type=text] {
+    table,
+    input[type=text] {
       border-radius: 20px;
       overflow: hidden;
       border: 1px solid #99f;
@@ -204,17 +205,24 @@
   <!-- SCRIPTS -->
   <script>
     // Задаём переменные, чтобы записывать туда наши действия
-    let mainTable = document.querySelector('table');
-    let functionResult = document.querySelector('#function-result');
-    let restrictionSystem = document.querySelector('#restrictionSystem');
-    let calculation = document.querySelector('#calculation');
-    let result = document.querySelector('#result');
+    let mainTable = elem('table');
+    let fr = elem('#function-result');
+    let rs = elem('#restrictionSystem');
+    let cc = elem('#calculation');
+    let r = elem('#result');
     let error = false;
 
     // Задаём переменные для функции
     let x1 = 0;
     let x2 = 0;
-    let resultingPriceOfIntake = 0;
+    let rpoi = 0;
+
+    function elem(name) {
+      return document.querySelector(name);
+    }
+    function elems(name) {
+      return document.querySelectorAll(name);
+    }
 
     // Для всех редактируемых ячеек таблицы, разрешим ввод только цифр
     for (let i = 0; i < mainTable.rows.length; i++) {
@@ -241,22 +249,22 @@
     // Функция вывода полного результата
     function calculateAndOutput() {
       // Перезаписываем переменные, чтобы на экране не оставалось предыдущее вычисление при повторном нажатии на кнопку
-      mainTable = document.querySelector('table');
-      functionResult = document.querySelector('#function-result');
-      restrictionSystem = document.querySelector('#restrictionSystem');
-      calculation = document.querySelector('#calculation');
-      result = document.querySelector('#result');
+      mainTable = elem('table');
+      fr = elem('#function-result');
+      rs = elem('#restrictionSystem');
+      cc = elem('#calculation');
+      r = elem('#result');
       error = false;
 
       // Выводим полный результат на экран:
-      let matrix = GetMatrix(mainTable);
-      functionResult.innerHTML = GetTargetFunction(matrix);
-      restrictionSystem.innerHTML = GetRestrictionSystem(matrix);
-      calculation.innerHTML = Calculate(matrix);
-      result.innerHTML = Result(x1, x2, matrix);
+      let matrix = newm(mainTable);
+      fr.innerHTML = gtf(matrix);
+      rs.innerHTML = grs(matrix);
+      cc.innerHTML = c(matrix);
+      r.innerHTML = res(x1, x2, matrix);
 
       // Вписываем стоимость всего рациона в таблицу
-      document.querySelector('table').rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].innerHTML = `<b>${resultingPriceOfIntake}</b>`;
+      elem('table').rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].innerHTML = `<b>${rpoi}</b>`;
 
       // Устраняем ошибку = 1x превращаем в x, Infinity превращаем в ∞, все что умножается на 0, приравниваем к нулю.
       document.body.innerHTML = document.body.innerHTML.replaceAll('<br>1x', '<br>x').replaceAll(' 1x', ' x').replaceAll('Infinity', '∞').replaceAll('NaN', 'не число').replaceAll('<br>0x₁', '<br>0').replaceAll('<br>0x₂', '<br>0').replaceAll(' 0x₁', ' 0').replaceAll(' 0x₂', ' 0');
@@ -268,22 +276,22 @@
 
       // Если произошла ошибка в вычислениях, то прячем все вычисления. Если нет - показываем.
       if (error) {
-        document.querySelector('section').classList.add('error');
-        document.querySelector('table').rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].classList.add('error');
+        elem('section').classList.add('error');
+        elem('table').rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].classList.add('error');
       }
       else {
-        document.querySelector('section').classList.remove('error');
-        document.querySelector('table').rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].classList.remove('error');
+        elem('section').classList.remove('error');
+        elem('table').rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].classList.remove('error');
       };
 
       // Показываем информацию.
-      document.querySelector('.info').classList.add('info--show');
-      document.querySelector('.restriction-sect').classList.remove('hide');
-      document.querySelector('.result-sect').classList.remove('hide');
+      elem('.info').classList.add('info--show');
+      elem('.restriction-sect').classList.remove('hide');
+      elem('.result-sect').classList.remove('hide');
     }
 
     // Округляем все числа на странице до ближайшего целого.
-    function RoundAllNumbers() {
+    function ran() {
       let tempHtml = document.body.innerHTML;
       let matches = tempHtml.match(/\-?\d+\.\d+/g);
       for (let i = 0; i < matches.length; i++) {
@@ -293,16 +301,16 @@
     }
 
     // Получаем матрицу из таблицы
-    function GetMatrix(table) {
+    function newm(t) {
       const matrix = [,];
       // не берем в расчет левый и верхний края таблицы, отсюда начинается матрица: i (ряд) = 2; j (столб.) = 1
-      for (let i = 2; i < table.rows.length; i++) {
+      for (let i = 2; i < t.rows.length; i++) {
         let rowData = [];
-        for (let j = 1; j < table.rows[i].cells.length; j++) {
+        for (let j = 1; j < t.rows[i].cells.length; j++) {
           // Проверка, если число меньше нуля (не проверяем последнюю запись в последнем ряду - там нет ничего для ввода, туда выводится результат)
-          if (j !== table.rows[i].cells.length - 1)
-            Validate(Number.parseInt(table.rows[i].cells[j].innerText));
-          rowData.push(parseInt(table.rows[i].cells[j].innerText));
+          if (j !== t.rows[i].cells.length - 1)
+            val(Number.parseInt(t.rows[i].cells[j].innerText));
+          rowData.push(parseInt(t.rows[i].cells[j].innerText));
         }
         matrix[i - 2] = rowData;
       }
@@ -310,53 +318,53 @@
     }
 
     // Выводим целевую функцию из матрицы
-    function GetTargetFunction(matrix) {
-      return `f(x) = <b>${matrix[0][3]}</b>x₁ + <b>${matrix[1][3]}</b>x₂ → <i>min</i>`;
+    function gtf(m) {
+      return `f(x) = <b>${m[0][3]}</b>x₁ + <b>${m[1][3]}</b>x₂ → <i>min</i>`;
     }
 
     // Выводим систему ограничений для S1, S2 и S3 соответственно
-    function GetRestrictionSystem(matrix) {
-      let output = '';
-      for (let i = 0; i < matrix.length; i++) {
-        let restriction = `${matrix[0][i]}x₁ + ${matrix[1][i]}x₂ ≥ ${matrix[2][i]}`;
-        output += `${restriction}<br>`;
+    function grs(m) {
+      let o = '';
+      for (let i = 0; i < m.length; i++) {
+        let restriction = `${m[0][i]}x₁ + ${m[1][i]}x₂ ≥ ${m[2][i]}`;
+        o += `${restriction}<br>`;
       }
-      return output;
+      return o;
     }
 
     // Вычисляем x1, x2
-    function Calculate(matrix) {
+    function c(m) {
       // получаем строки для системы ограничений - нужно только для того, чтобы показать, из чего что вытекает
-      let restrictionSystemStrings = GetRestrictionSystem(matrix).split('<br>');
-      let output = '';
+      let rss = grs(m).split('<br>');
+      let o = '';
       // x2:      
-      output = `<span class=\'label\'>Из<b> ${restrictionSystemStrings[1]}</b> вытекает:</span><br>`;
-      output += `${matrix[0][1]}x₁ = ${matrix[2][1]} - ${matrix[1][1]}x₂<br>`;
+      o = `<span class=\'label\'>Из<b> ${rss[1]}</b> вытекает:</span><br>`;
+      o += `${m[0][1]}x₁ = ${m[2][1]} - ${m[1][1]}x₂<br>`;
 
-      let temp21 = Math.round(matrix[2][1] / matrix[0][1]);
-      let temp11 = Math.round(matrix[1][1] / matrix[0][1]);
+      let t21 = Math.round(m[2][1] / m[0][1]);
+      let t11 = Math.round(m[1][1] / m[0][1]);
 
-      output += `x₁ = ${temp21} - ${temp11}x₂<br>`;
-      output += `<span class=\'label\'>Подставляем в<b> ${restrictionSystemStrings[0]}</b> вместо x₁ это значение:</span><br>`;
-      output += `${matrix[0][0]}(${temp21} - ${temp11}x₂) + ${matrix[1][0]}x₂ = ${matrix[2][0]}<br>`;
-      output += `${matrix[0][0] * temp21} - ${matrix[0][0] * temp11}x₂ + ${matrix[1][0]}x₂ = ${matrix[2][0]}<br>`;
-      output += `${-matrix[0][0] * temp11}x₂ + ${matrix[1][0]}x₂ = ${matrix[2][0]} - ${matrix[0][0] * temp21}<br>`;
-      output += `${-matrix[0][0] * temp11 + matrix[1][0]}x₂ = ${matrix[2][0] - matrix[0][0] * temp21}<br>`;
-      x2 = Math.round((matrix[2][0] - matrix[0][0] * temp21) / (-matrix[0][0] * temp11 + matrix[1][0]));
-      output += `<b>x₂ = ${x2}</b>`;
-      output += '<span class=\'label\'><b> (кг.)</b></span><br>';
+      o += `x₁ = ${t21} - ${t11}x₂<br>`;
+      o += `<span class=\'label\'>Подставляем в<b> ${rss[0]}</b> вместо x₁ это значение:</span><br>`;
+      o += `${m[0][0]}(${t21} - ${t11}x₂) + ${m[1][0]}x₂ = ${m[2][0]}<br>`;
+      o += `${m[0][0] * t21} - ${m[0][0] * t11}x₂ + ${m[1][0]}x₂ = ${m[2][0]}<br>`;
+      o += `${-m[0][0] * t11}x₂ + ${m[1][0]}x₂ = ${m[2][0]} - ${m[0][0] * t21}<br>`;
+      o += `${-m[0][0] * t11 + m[1][0]}x₂ = ${m[2][0] - m[0][0] * t21}<br>`;
+      x2 = Math.round((m[2][0] - m[0][0] * t21) / (-m[0][0] * t11 + m[1][0]));
+      o += `<b>x₂ = ${x2}</b>`;
+      o += '<span class=\'label\'><b> (кг.)</b></span><br>';
       // x1, выражаем через x2:
-      output += `x₁ = ${temp21} - ${matrix[1][1]}x₂<br>`;
-      output += `x₁ = ${temp21} - ${matrix[1][1] * x2}<br>`;
-      x1 = temp21 - matrix[1][1] * x2;
-      output += `<b>x₁ = ${x1}</b>`;
-      output += '<span class=\'label\'><b> (кг.)</b></span><br>';
-      ValidateX(x1, x2);
-      return output;
+      o += `x₁ = ${t21} - ${m[1][1]}x₂<br>`;
+      o += `x₁ = ${t21} - ${m[1][1] * x2}<br>`;
+      x1 = t21 - m[1][1] * x2;
+      o += `<b>x₁ = ${x1}</b>`;
+      o += '<span class=\'label\'><b> (кг.)</b></span><br>';
+      valx(x1, x2);
+      return o;
     }
 
     // Проверяем, не меньше ли x1 и x2 чем нуль.
-    function ValidateX(x1, x2) {
+    function valx(x1, x2) {
       // если меньше:
       if (x1 <= 0 || x2 <= 0) {
         // прячем вычисления:
@@ -366,7 +374,7 @@
     }
 
     // Проверяем, не равно ли число в таблице нулю либо оно меньше нуля (применяется в цикле)
-    function Validate(num) {
+    function val(num) {
       // если меньше:
       if (num <= 0) {
         // прячем вычисления:
@@ -376,14 +384,14 @@
     }
 
     // Подставляем x1, x2 в целевую функцию
-    function Result(x1, x2, matrix) {
-      let output = `<span class=\'label\'>Подставляем значения в целевую функцию <b>${functionResult.innerText.split(' →')[0]}</b>:</span><br>`;
-      output += `f(x) = ${matrix[0][3]} * ${Math.round(x1)} + ${matrix[1][3]} * ${x2}<br>`
-      output += `f(x) = ${matrix[0][3] * x1} + ${matrix[1][3] * x2}<br>`
-      resultingPriceOfIntake = matrix[0][3] * x1 + matrix[1][3] * x2;
-      output += `<b>f(x) = ${resultingPriceOfIntake}</b>`
-      output += '<span class=\'label\'><b> (тг.)</b></span><br>';
-      return output;
+    function res(x1, x2, m) {
+      let o = `<span class=\'label\'>Подставляем значения в целевую функцию <b>${fr.innerText.split(' →')[0]}</b>:</span><br>`;
+      o += `f(x) = ${m[0][3]} * ${Math.round(x1)} + ${m[1][3]} * ${x2}<br>`
+      o += `f(x) = ${m[0][3] * x1} + ${m[1][3] * x2}<br>`
+      rpoi = m[0][3] * x1 + m[1][3] * x2;
+      o += `<b>f(x) = ${rpoi}</b>`
+      o += '<span class=\'label\'><b> (тг.)</b></span><br>';
+      return o;
     }
   </script>
 </body>

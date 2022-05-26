@@ -91,11 +91,13 @@
       width: 100vw;
     }
 
-    table,input[type=text] {
+    table,
+    input[type=text] {
       border-radius: 20px;
       overflow: hidden;
       border: 1px solid #99f;
     }
+
     button {
       padding: 10px 20px;
       background: #77d;
@@ -103,6 +105,7 @@
       font: inherit;
       border: none;
     }
+
     button:active {
       background: #44a;
     }
@@ -202,10 +205,10 @@
     </div>
     <!-- Calculate button -->
     <div class="m-t jc-c">
-      <button onclick="outputAllTo(document.querySelector('.interpret'))" id="calculate">Рассчитать</button>
+      <button onclick="outputAllTo(elem('.intt'))" id="calculate">Рассчитать</button>
     </div>
-    <!-- Interpretation -->
-    <section class="interpret m-t">
+    <!-- inttation -->
+    <section class="intt m-t">
 
     </section>
     <!-- Info -->
@@ -213,15 +216,23 @@
   </main>
   <!-- SCRIPTS -->
   <script>
-    let max25, max12, planned25, remainsFrom25, mx12From25Remains, planned12, made12from25rem, remaining12, fullTo12, result12, steps = 0,
+    let max25, max12, planned25, remainsFrom25, mx12From25Remains, planned12, made12from25rem, remaining12, fullTo12, result12, st = 0,
       plan25, plan12, cmInFull, length25, length12,
       units = ["заг", "заг", "пр", "см", "заг", "пр", "заг", "заг", "пр", "пр"], allStrings = ["max25", "max12", "planned25", "remainsFrom25", "mx12From25Remains", "planned12", "made12from25rem", "remaining12", "fullTo12", "result12"];
 
-    document.querySelectorAll('.input-cm').forEach((element) => element.outerHTML = `<div>${element.outerHTML}<label class="label"> (см.)</label></div>`);
 
-    document.querySelectorAll('.input-plan').forEach((element) => element.outerHTML = `<div>${element.outerHTML}<label class="label"> (заг.)</label></div>`);
+    function elem(name) {
+      return document.querySelector(name);
+    }
+    function elems(name) {
+      return document.querySelectorAll(name);
+    }
 
-    document.querySelectorAll('input').forEach((element) => allowNumbersOnly(element))
+    elems('.input-cm').forEach((element) => element.outerHTML = `<div>${element.outerHTML}<label class="label"> (см.)</label></div>`);
+
+    elems('.input-plan').forEach((element) => element.outerHTML = `<div>${element.outerHTML}<label class="label"> (заг.)</label></div>`);
+
+    elems('input').forEach((element) => allowNumbersOnly(element));
 
     function allowNumbersOnly(inputEl) {
       inputEl.onkeydown = function (e) {
@@ -242,12 +253,12 @@
       }
     }
 
-    function getVars() {
-      length25 = document.querySelector('.input-exp1').value;
-      length12 = document.querySelector('.input-exp2').value;
-      plan25 = document.querySelector('.input-plan1').value;
-      plan12 = document.querySelector('.input-plan2').value;
-      cmInFull = document.querySelector('.input-expa').value;
+    function gv() {
+      length25 = elem('.input-exp1').value;
+      length12 = elem('.input-exp2').value;
+      plan25 = elem('.input-plan1').value;
+      plan12 = elem('.input-plan2').value;
+      cmInFull = elem('.input-expa').value;
     }
 
     // Serves a double purpose. OutputStep function gets the internal code of this Calc function and then interpolates pre-calculated values into it. Also the comments are used in HTML to explain what is going on.
@@ -266,34 +277,34 @@
       // End of calculation
     }
 
-    function outputStep(varToSearch) {
-      let eqChar = '=';
-      let codeWithDesc = document.body.innerHTML.split("// Start of calculation")[1].split("// End of calculation")[0].trim();
-      let calcCode = codeWithDesc.split(varToSearch)[1].split('// ')[0].replace(' = ', '');
-      let calcCodeDesc = codeWithDesc.split(varToSearch)[1].split('// ')[1].split('\n')[0];
-      if (calcCode.match('Math.round')
-        || calcCode.match('Math.ceil')
-        || calcCode.match('Math.floor')) {
-        calcCode = calcCode.replaceAll('Math.round(', '').replaceAll('Math.floor(', '').replaceAll('Math.ceil(', '').replaceAll(')', '');
-        eqChar = '≈'
+    function ost(vts) {
+      let eqc = '=';
+      let cwd = document.body.innerHTML.split("// Start of calculation")[1].split("// End of calculation")[0].trim();
+      let ccc = cwd.split(vts)[1].split('// ')[0].replace(' = ', '');
+      let ccd = cwd.split(vts)[1].split('// ')[1].split('\n')[0];
+      if (ccc.match('Math.round')
+        || ccc.match('Math.ceil')
+        || ccc.match('Math.floor')) {
+        ccc = ccc.replaceAll('Math.round(', '').replaceAll('Math.floor(', '').replaceAll('Math.ceil(', '').replaceAll(')', '');
+        eqc = '≈'
       }
-      return `<div class="m-t-sm step${steps}"><span class="step__desc">${calcCodeDesc}</span><br>${calcCode}${eqChar} ${varToSearch}<span class="lab"> (${units[steps]}.)</span></div>`;
+      return `<div class="m-t-sm step${st}"><span class="step__desc">${ccd}</span><br>${ccc}${eqc} ${vts}<span class="lab"> (${units[st]}.)</span></div>`;
     }
 
     function outputAllTo(htmlEl) {
-      steps = 0;
-      getVars();
+      st = 0;
+      gv();
       calc();
       htmlEl.innerHTML = '';
-      for (; steps < allStrings.length; steps++) {
-        htmlEl.innerHTML += outputStep(allStrings[steps]);
+      for (; st < allStrings.length; st++) {
+        htmlEl.innerHTML += ost(allStrings[st]);
       }
-      interpolate();
+      ipl();
     }
 
     // Interpolate all vars in html
-    function interpolate() {
-      document.querySelector('.interpret').innerHTML = document.querySelector('.interpret').innerHTML
+    function ipl() {
+      elem('.intt').innerHTML = elem('.intt').innerHTML
         .replaceAll("max25", max25)
         .replaceAll("max12", max12)
         .replaceAll("planned25", planned25)
