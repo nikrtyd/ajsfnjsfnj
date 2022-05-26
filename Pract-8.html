@@ -5,11 +5,9 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Задача 9</title>
+  <title>Задача 8</title>
   <!-- STYLE -->
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap');
-
     :root {
       --body-background: #114;
       --body-foreground: #eee;
@@ -19,20 +17,20 @@
       --button-background-active: #225;
       --button-border: #ccc;
       --table-border: #99f;
-      --input-border: #aaf;
       --system-before: #ccc2;
       --label: #66a;
-      --good: #4caf50;
-      --bad: #f44336;
+      --good: #6f80ef;
+      --bad: #6c70df;
       --border-radius: 20px;
     }
 
     body,
     main {
-      margin: 0;
+      margin: 0 auto;
+      max-width: 1000px;
       background: var(--body-background);
       color: var(--body-foreground);
-      font-family: 'Source Sans Pro', Geneva, Verdana, sans-serif;
+      font-family: 'Bahnschrift', 'JetBrains Mono', Geneva, Verdana, sans-serif;
       font-size: 18px;
       height: 100vh;
     }
@@ -66,11 +64,28 @@
       text-align: center;
       min-width: 125px;
       padding: 6px;
+      border: 1px solid var(--table-border);
     }
 
     td:not([contenteditable]) {
       background: var(--body-background-locked);
       color: var(--body-foreground-locked);
+    }
+
+    .m-t {
+      margin-top: 30px;
+    }
+
+    .m-l {
+      margin-left: 5px;
+    }
+
+    .m-t-small {
+      margin-top: 5px;
+    }
+
+    .m-l-large {
+      margin-left: 30px;
     }
 
     .m-0-auto {
@@ -81,11 +96,14 @@
       width: 100vw;
     }
 
-    table,input[type=text] {
+    table,
+    input[type=text] {
       border-radius: 20px;
       overflow: hidden;
       border: 1px solid #99f;
+      font-family: 'JetBrains Mono';
     }
+
     button {
       padding: 10px 20px;
       background: #77d;
@@ -168,93 +186,94 @@
     .fw-b {
       font-weight: bold;
     }
-
-    .system::before {
-      content: "{";
-      position: absolute;
-      margin-top: -16px;
-      margin-left: -29px;
-      font-size: 70px;
-      color: var(--button-border)2;
-    }
-
-    .door {
-      box-sizing: border-box;
-      border: 27px inset #999;
-      height: calc(2 * 150px);
-      width: calc(1.4 * 150px);
-      /* border-bottom: none; */
-    }
-
-    .gap {
-      gap: 20px;
-    }
   </style>
 
 </head>
 
 <body>
   <!-- MAIN CONTENT -->
-  <main class="flex ai-c jc-c gap dir-col">
-    <div class="flex gap">
-      <div class="door"></div>
-      <!-- Inputs container -->
-      <div class="inputs dir-col flex gap">
-        <div class="flex dir-col ">
-          <label class="label">Ширина рамы (м)</label>
-          <input class="inputs__input--width" type="text">
-        </div>
-        <div class="flex dir-col ">
-          <label class="label">Высота рамы (м)</label>
-          <input class="inputs__input--height" type="text">
-        </div>
-        <div class="flex dir-col ">
-          <label class="label">Кол-во рам (шт.)</label>
-          <input class="inputs__input--count" type="text">
-        </div>
-        <div class="flex dir-col ">
-          <label class="label">Длина доски (м)</label>
-          <input class="inputs__input--length" type="text">
-        </div>
-      </div>
+  <main class="flex jc-c dir-col">
+    <!-- Table container -->
+    <div class="flex">
+      <!-- Table -->
+      <table cellspacing="0" cellpadding="0" border="1">
+        <tbody>
+          <tr>
+            <td rowspan="2">Вид изделия</td>
+            <td colspan="3">Затраты (т)</td>
+            <td rowspan="2">Прибыль (тенге)</td>
+          </tr>
+          <tr>
+            <td>цемента</td>
+            <td>песка</td>
+            <td>щебня</td>
+          </tr>
+          <tr>
+            <td>Вид 1</td>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+          </tr>
+          <tr>
+            <td>Вид 2</td>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+          </tr>
+          <tr>
+            <td>Вид 3</td>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+          </tr>
+          <tr>
+            <td>Должно сверх плана поступить</td>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+            <td class="fw-b"></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-    <!-- Calculate and inttation container -->
-    <div class="flex dir-col gap">
-      <!-- Calculate button -->
-      <div class="flex jc-c">
-        <button onclick="get(newm(mainTable))" id="calculate">Рассчитать</button>
-      </div>
-      <!-- inttation -->
-      <section class="intt gap flex dir-col">
-        <div class="intt__function "></div>
-        <div class="intt__restr ">
-          <div class="system"></div>
-        </div>
-        <div class="intt__calc "></div>
-        <div class="intt__ver "></div>
-        <div class="intt__profit "></div>
-      </section>
+    <!-- Calculate button -->
+    <div class="m-t jc-c">
+      <button onclick="run(newm(mainTable))" id="calculate">Вычислить</button>
     </div>
+    <!-- inttation -->
+    <section class="intt m-t flex dir-col">
+      <div class="intt__function m-t"></div>
+      <div class="intt__restr m-t">
+        <div class="system"></div>
+      </div>
+      <div class="intt__calc m-t"></div>
+      <div class="intt__ver m-t"></div>
+      <div class="intt__profit m-t"></div>
+    </section>
     <!-- SCRIPTS -->
     <script>
-      
+      // Задаём переменные, чтобы записывать туда наши действия
+      let mainTable = elem('table'),
+        min1 = 0,
+        min2 = 0;
+
+
       function elem(name) {
         return document.querySelector(name);
       }
       function elems(name) {
         return document.querySelectorAll(name);
       }
-      // Задаём переменные, чтобы записывать туда наши действия
-      // let mainTable = elem('table'),
-      //   min1 = 0,
-      //   min2 = 0;
 
       // numbers only for all cells in table
-      // for (let i = 0; i < mainTable.rows.length; i++) {
-      //   for (let j = 0; j < mainTable.rows[i].cells.length; j++) {
-      //     mainTable.rows[i].cells[j].onkeydown = NumbersOnly;
-      //   }
-      // }
+      for (let i = 0; i < mainTable.rows.length; i++) {
+        for (let j = 0; j < mainTable.rows[i].cells.length; j++) {
+          mainTable.rows[i].cells[j].onkeydown = nums;
+        }
+      }
 
       // numbers only for all inputs
       elems('input').forEach((element) => element.onkeydown = nums);
@@ -284,7 +303,7 @@
           let rowData = [];
           for (let j = 1; j < t.rows[i].cells.length; j++) {
             let cell = t.rows[i].cells[j];
-            val(cell);
+            vali(cell);
             rowData.push(parseFloat(t.rows[i].cells[j].innerText));
           }
           m[i - 2] = rowData;
@@ -293,12 +312,12 @@
       }
 
       // если нет данных, то присваиваем нулю
-      function val(el) {
+      function vali(el) {
         if (!(el.innerText.match(/\d/)))
           el.innerText = 0;
       }
 
-      function get(m) {
+      function run(m) {
         min1 = 20;
         min2 = 20;
         min3 = 20;
@@ -313,55 +332,49 @@
           mainTable.rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].innerText = 'НЕДОСТИЖИМО';
           return;
         }
-        elem('.intt__ver').innerHTML = `<div class="system">${m[0][0]} * ${r[1]} + ${m[1][0]} * ${r[2]} + ${m[2][0]} * ${r[3]} = ${m[0][0] * r[1] + m[1][0] * r[2] + m[2][0] * r[3]}` + (((m[0][0] * r[1] + m[1][0] * r[2]) <= m[3][0]) ? `<span class="var(--good)"> ≤ ${m[3][0]}</span>` : `<span class="var(--bad)">, больше ${m[3][0]}</span>`)
-          + `<br>${m[0][1]} * ${r[1]} + ${m[1][1]} * ${r[2]} + ${m[2][1]} * ${r[3]} = ${m[0][1] * r[1] + m[1][1] * r[2] + m[2][1] * r[3]}` + (((m[0][1] * r[1] + m[1][1] * r[2] + m[2][1] * r[3]) <= m[3][1]) ? `<span class="var(--good)"> ≤ ${m[3][1]}</span>` : `<span class="var(--bad)">, больше ${m[3][1]}</span>`)
-          + `<br>${m[0][2]} * ${r[1]} + ${m[1][2]} * ${r[2]} + ${m[2][2]} * ${r[3]} = ${m[0][2] * r[1] + m[1][2] * r[2] + m[2][2] * r[3]}` + (((m[0][2] * r[1] + m[1][2] * r[2] + m[2][2] * r[3]) <= m[3][2]) ? `<span class="var(--good)"> ≤ ${m[3][2]}</span>` : `<span class="var(--bad)">, больше ${m[3][2]}</span>`) + '</div>';
-        elem('.intt__profit').innerHTML = `f(x) = ${m[0][3]} * ${r[1]} + ${m[1][3]} * ${r[2]} + ${m[2][3]} * ${r[3]} = ${m[0][3] * r[1] + m[1][3] * r[2] + m[2][3] * r[3]}<label> (тг.) - максимальная достижимая прибыль</label>`;
+        elem('.intt__ver').innerHTML = `<div class="system">${m[0][0]} * ${r[1]} + ${m[1][0]} * ${r[2]} + ${m[2][0]} * ${r[3]} = ${m[0][0] * r[1] + m[1][0] * r[2] + m[2][0] * r[3]}` + (((m[0][0] * r[1] + m[1][0] * r[2]) <= m[3][0]) ? `<span class="good"> ≤ ${m[3][0]}</span>` : `<span class="bad">, больше ${m[3][0]}</span>`)
+          + `<br>${m[0][1]} * ${r[1]} + ${m[1][1]} * ${r[2]} + ${m[2][1]} * ${r[3]} = ${m[0][1] * r[1] + m[1][1] * r[2] + m[2][1] * r[3]}` + (((m[0][1] * r[1] + m[1][1] * r[2] + m[2][1] * r[3]) <= m[3][1]) ? `<span class="good"> ≤ ${m[3][1]}</span>` : `<span class="bad">, больше ${m[3][1]}</span>`)
+          + `<br>${m[0][2]} * ${r[1]} + ${m[1][2]} * ${r[2]} + ${m[2][2]} * ${r[3]} = ${m[0][2] * r[1] + m[1][2] * r[2] + m[2][2] * r[3]}` + (((m[0][2] * r[1] + m[1][2] * r[2] + m[2][2] * r[3]) <= m[3][2]) ? `<span class="good"> ≤ ${m[3][2]}</span>` : `<span class="bad">, больше ${m[3][2]}</span>`) + '</div>';
+        elem('.intt__profit').innerHTML = `f(x) = ${m[0][3]} * ${r[1]} + ${m[1][3]} * ${r[2]} + ${m[2][3]} * ${r[3]} = ${m[0][3] * r[1] + m[1][3] * r[2] + m[2][3] * r[3]}<label> (тенге) - максимальная достижимая прибыль</label>`;
         mainTable.rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].innerText = r[0];
       }
 
       function prof(m) {
-        let maxProfit = 0, maxOfType1 = 0, maxOfType2 = 0, maxOfType3 = 0;
+        let maxp = 0, mx1 = 0, mx2 = 0, mx3 = 0;
         for (let t1c = 20; t1c < 400; t1c++) {
           for (let t3c = 20; t3c < 400; t3c++) {
             for (let t2c = 20; t2c < 400; t2c++) {
-              let cementSurplus = m[3][0] - (m[0][0] * t1c) - (m[1][0] * t2c) - (m[2][0] * t3c);   // остаток цемента
-              let sandSurplus = m[3][1] - (m[0][1] * t1c) - (m[1][1] * t2c) - (m[2][1] * t3c);   // остаток песка
-              let rubbleSurplus = m[3][2] - (m[0][2] * t1c) - (m[1][2] * t2c) - (m[2][2] * t3c);   // остаток щебня
-              let newProfit = (t1c * m[0][3] + t2c * m[1][3] + t3c * m[2][3]);
-              if (cementSurplus < 0 || sandSurplus < 0 || rubbleSurplus < 0) continue; // остаток не может быть меньше 0
-              if (newProfit > maxProfit) {
-                maxProfit = newProfit;
-                maxOfType1 = t1c;
-                maxOfType2 = t2c;
-                maxOfType3 = t3c;
+              let csp = m[3][0] - (m[0][0] * t1c) - (m[1][0] * t2c) - (m[2][0] * t3c);   // остаток цемента
+              let ssp = m[3][1] - (m[0][1] * t1c) - (m[1][1] * t2c) - (m[2][1] * t3c);   // остаток песка
+              let rsp = m[3][2] - (m[0][2] * t1c) - (m[1][2] * t2c) - (m[2][2] * t3c);   // остаток щебня
+              let newp = (t1c * m[0][3] + t2c * m[1][3] + t3c * m[2][3]);
+              if (csp < 0 || ssp < 0 || rsp < 0) continue; // остаток не может быть меньше 0
+              if (newp > maxp) {
+                maxp = newp;
+                mx1 = t1c;
+                mx2 = t2c;
+                mx3 = t3c;
               }
             }
           }
         }
-        return [maxProfit, maxOfType1, maxOfType2, maxOfType3];
+        return [maxp, mx1, mx2, mx3];
       }
 
       // remove this
-      let suka =
+      let arint =
         ["2", "5", "0", "20",
           "3", "0", "4", "40",
           "2", "2", "3", "38",
           "800", "1800", "1240"]
-      let lol = 0;
+      let idx = 0;
       for (let rowI = 2; rowI < mainTable.rows.length; rowI++) {
         for (let cellI = 1; cellI < mainTable.rows[rowI].cells.length; cellI++) {
-          elem('table').rows[rowI].cells[cellI].innerText = suka[lol];
-          lol++;
+          elem('table').rows[rowI].cells[cellI].innerText = arint[idx];
+          idx++;
         }
       }
-      get(newm(mainTable));
-
-// f(x) = 20x1 + 40x2 + 38x3 -> max
-  // 2x1 + 3x2 + 2x3 <= 800
-  // 5x1 + 0x2 + 2x3 <= 1800
-  // 0x1 + 4x2 + 3x3 <= 1240
-
+      run(newm(mainTable));
     </script>
 </body>
 

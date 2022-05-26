@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Задача 1</title>
+  <!-- STYLE -->
+  <style>
+    :root {
+      --body-background: #114;
+      --body-foreground: #eee;
+      --body-background-locked: #225;
+      --body-foreground-locked: #ddd;
+      --button-background: #336;
+      --button-background-active: #225;
+      --button-border: #ccc;
+      --table-border: #99f;
+      --system-before: #ccc2;
+      --label: #66a;
+      --good: #6f80ef;
+      --bad: #6c70df;
+      --border-radius: 20px;
+    }
+
+    body,
+    main {
+      margin: 0 auto;
+      max-width: 1000px;
+      background: var(--body-background);
+      color: var(--body-foreground);
+      font-family: 'Bahnschrift', 'JetBrains Mono', Geneva, Verdana, sans-serif;
+      font-size: 18px;
+      height: 100vh;
+      padding: 0 40px;
+    }
+
+    .flex {
+      display: flex;
+    }
+
+    .ai-c {
+      align-items: center;
+    }
+
+    .jc-c {
+      justify-content: center;
+    }
+
+    .dir-col {
+      flex-direction: column;
+    }
+
+    .ta-c {
+      text-align: center;
+    }
+
+    .hide {
+      display: none;
+    }
+
+    td {
+      vertical-align: middle;
+      text-align: center;
+      min-width: 125px;
+      padding: 6px;
+      border: 1px solid var(--table-border);
+    }
+
+    td:not([contenteditable]) {
+      background: var(--body-background-locked);
+      color: var(--body-foreground-locked);
+    }
+
+    .m-t {
+      margin-top: 30px;
+    }
+
+    .m-l {
+      margin-left: 5px;
+    }
+
+    table,
+    input[type=text] {
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid #99f;
+      font-family: 'JetBrains Mono';
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #77d;
+      border-radius: 20px;
+      font: inherit;
+      border: none;
+    }
+
+    button:active {
+      background: #44a;
+    }
+
+    .info--show::after {
+      content: 'Все значения округлены до ближайших целых.';
+      margin-left: 100px;
+      font-size: 14px;
+      color: #888;
+    }
+
+    #restrictionSystem::before {
+      content: '{';
+      position: absolute;
+      margin-top: -22px;
+      margin-left: -32px;
+      font-size: 72px;
+      color: var(--button-background-active);
+    }
+
+    .label {
+      color: var(--label);
+    }
+
+    .error>*:not(.info),
+    .error>.info--show::after {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- MAIN CONTENT -->
+  <main class="flex jc-c dir-col">
+    <!-- Table -->
+    <table cellspacing="0" cellpadding="0" border="1" style="max-width: 400px">
+      <tbody>
+        <tr>
+          <td rowspan="2">Вид корма</td>
+          <td colspan="3" width="374">Количество пит. в ед. корма</td>
+          <td rowspan="2">Стоим. ед. корма в тенге</td>
+        </tr>
+        <tr>
+          <td>S₁</td>
+          <td>S₂</td>
+          <td>S₃</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td class="forTargetFunction" contenteditable="true"></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td class="forTargetFunction" contenteditable="true"></td>
+        </tr>
+        <tr>
+          <td>Полный рацион</td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+    <section>
+      <!-- Calculate -->
+      <div class="m-t info">
+        <button onclick="calculateAndOutput()" id="calculate">Вычислить</button>
+      </div>
+      <!-- Target Function -->
+      <div class="flex m-t result-sect hide">
+        <span class="label">
+          Целевая функция:
+        </span>
+        <span class="m-l result" id="function-result">
+          нет функции
+        </span>
+      </div>
+      <!-- Restriction System -->
+      <section class="m-t hide restriction-sect">
+        <span class="label">
+          Система ограничений:<br>
+        </span>
+        <span id="restrictionSystem" class="ta-c">
+
+        </span>
+      </section>
+      <!-- Calculation -->
+      <section class="m-t">
+        <span id="calculation" class="ta-c">
+
+        </span>
+      </section>
+      <!-- Resulting function -->
+      <section class="m-t">
+        <span id="result" class="ta-c">
+
+        </span>
+      </section>
+    </section>
+  </main>
+  <!-- SCRIPTS -->
+  <script>
+    // Задаём переменные, чтобы записывать туда наши действия
+    let mainTable = elem('table');
+    let fr = elem('#function-result');
+    let rs = elem('#restrictionSystem');
+    let cc = elem('#calculation');
+    let r = elem('#result');
+    let error = false;
+
+    // Задаём переменные для функции
+    let x1 = 0;
+    let x2 = 0;
+    let rpoi = 0;
+
+    function elem(name) {
+      return document.querySelector(name);
+    }
+    function elems(name) {
+      return document.querySelectorAll(name);
+    }
+
+    // Для всех редактируемых ячеек таблицы, разрешим ввод только цифр
+    for (let i = 0; i < mainTable.rows.length; i++) {
+      for (let j = 0; j < mainTable.rows[i].cells.length; j++) {
+        mainTable.rows[i].cells[j].onkeydown = function (e) {
+          if (!e) e = window.event;
+          var keyCode = e.keyCode || e.which;
+          if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+            if (keyCode >= 48 && keyCode <= 57) {
+              return true;
+            }
+            if (keyCode >= 96 && keyCode <= 105) {
+              return true;
+            }
+            if (keyCode == 8 || keyCode == 46) {
+              return true;
+            }
+            return false;
+          }
+        }
+      }
+    }
+
+    // Функция вывода полного результата
+    function calculateAndOutput() {
+      // Перезаписываем переменные, чтобы на экране не оставалось предыдущее вычисление при повторном нажатии на кнопку
+      mainTable = elem('table');
+      fr = elem('#function-result');
+      rs = elem('#restrictionSystem');
+      cc = elem('#calculation');
+      r = elem('#result');
+      error = false;
+
+      // Выводим полный результат на экран:
+      let matrix = newm(mainTable);
+      fr.innerHTML = gtf(matrix);
+      rs.innerHTML = grs(matrix);
+      cc.innerHTML = c(matrix);
+      r.innerHTML = res(x1, x2, matrix);
+
+      // Вписываем стоимость всего рациона в таблицу
+      elem('table').rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].innerHTML = `<b>${rpoi}</b>`;
+
+      // Устраняем ошибку = 1x превращаем в x, Infinity превращаем в ∞, все что умножается на 0, приравниваем к нулю.
+      document.body.innerHTML = document.body.innerHTML.replaceAll('<br>1x', '<br>x').replaceAll(' 1x', ' x').replaceAll('Infinity', '∞').replaceAll('NaN', 'не число').replaceAll('<br>0x₁', '<br>0').replaceAll('<br>0x₂', '<br>0').replaceAll(' 0x₁', ' 0').replaceAll(' 0x₂', ' 0');
+
+      // Устраняем ошибку - если было два раза написано что из чего вытекает при поиске x2 (не берём в расчёт место, где мы ищем x1 - там еще один раз), то убираем одну строку
+      let x2Matches = document.body.innerHTML.match(/<br>x₁ = \d+ - \d+x₂/g);
+      if (x2Matches.length == 3)
+        document.body.innerHTML = document.body.innerHTML.replace(x2Matches[0], '');
+
+      // Если произошла ошибка в вычислениях, то прячем все вычисления. Если нет - показываем.
+      if (error) {
+        elem('section').classList.add('error');
+        elem('table').rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].classList.add('error');
+      }
+      else {
+        elem('section').classList.remove('error');
+        elem('table').rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].classList.remove('error');
+      };
+
+      // Показываем информацию.
+      elem('.info').classList.add('info--show');
+      elem('.restriction-sect').classList.remove('hide');
+      elem('.result-sect').classList.remove('hide');
+    }
+
+    // Округляем все числа на странице до ближайшего целого.
+    function ran() {
+      let tempHtml = document.body.innerHTML;
+      let matches = tempHtml.match(/\-?\d+\.\d+/g);
+      for (let i = 0; i < matches.length; i++) {
+        tempHtml = tempHtml.replace(matches[i], Math.round(Number.parseFloat(matches[i])));
+      }
+      document.body.innerHTML = tempHtml;
+    }
+
+    // Получаем матрицу из таблицы
+    function newm(t) {
+      const matrix = [,];
+      // не берем в расчет левый и верхний края таблицы, отсюда начинается матрица: i (ряд) = 2; j (столб.) = 1
+      for (let i = 2; i < t.rows.length; i++) {
+        let rowData = [];
+        for (let j = 1; j < t.rows[i].cells.length; j++) {
+          // Проверка, если число меньше нуля (не проверяем последнюю запись в последнем ряду - там нет ничего для ввода, туда выводится результат)
+          if (j !== t.rows[i].cells.length - 1)
+            val(Number.parseInt(t.rows[i].cells[j].innerText));
+          rowData.push(parseInt(t.rows[i].cells[j].innerText));
+        }
+        matrix[i - 2] = rowData;
+      }
+      return matrix;
+    }
+
+    // Выводим целевую функцию из матрицы
+    function gtf(m) {
+      return `f(x) = <b>${m[0][3]}</b>x₁ + <b>${m[1][3]}</b>x₂ → <i>min</i>`;
+    }
+
+    // Выводим систему ограничений для S1, S2 и S3 соответственно
+    function grs(m) {
+      let o = '';
+      for (let i = 0; i < m.length; i++) {
+        let restriction = `${m[0][i]}x₁ + ${m[1][i]}x₂ ≥ ${m[2][i]}`;
+        o += `${restriction}<br>`;
+      }
+      return o;
+    }
+
+    // Вычисляем x1, x2
+    function c(m) {
+      // получаем строки для системы ограничений - нужно только для того, чтобы показать, из чего что вытекает
+      let rss = grs(m).split('<br>');
+      let o = '';
+      // x2:      
+      o = `<span class=\'label\'>Из<b> ${rss[1]}</b> вытекает:</span><br>`;
+      o += `${m[0][1]}x₁ = ${m[2][1]} - ${m[1][1]}x₂<br>`;
+
+      let t21 = Math.round(m[2][1] / m[0][1]);
+      let t11 = Math.round(m[1][1] / m[0][1]);
+
+      o += `x₁ = ${t21} - ${t11}x₂<br>`;
+      o += `<span class=\'label\'>Подставляем в<b> ${rss[0]}</b> вместо x₁ это значение:</span><br>`;
+      o += `${m[0][0]}(${t21} - ${t11}x₂) + ${m[1][0]}x₂ = ${m[2][0]}<br>`;
+      o += `${m[0][0] * t21} - ${m[0][0] * t11}x₂ + ${m[1][0]}x₂ = ${m[2][0]}<br>`;
+      o += `${-m[0][0] * t11}x₂ + ${m[1][0]}x₂ = ${m[2][0]} - ${m[0][0] * t21}<br>`;
+      o += `${-m[0][0] * t11 + m[1][0]}x₂ = ${m[2][0] - m[0][0] * t21}<br>`;
+      x2 = Math.round((m[2][0] - m[0][0] * t21) / (-m[0][0] * t11 + m[1][0]));
+      o += `<b>x₂ = ${x2}</b>`;
+      o += '<span class=\'label\'><b> (кг.)</b></span><br>';
+      // x1, выражаем через x2:
+      o += `x₁ = ${t21} - ${m[1][1]}x₂<br>`;
+      o += `x₁ = ${t21} - ${m[1][1] * x2}<br>`;
+      x1 = t21 - m[1][1] * x2;
+      o += `<b>x₁ = ${x1}</b>`;
+      o += '<span class=\'label\'><b> (кг.)</b></span><br>';
+      valx(x1, x2);
+      return o;
+    }
+
+    // Проверяем, не меньше ли x1 и x2 чем нуль.
+    function valx(x1, x2) {
+      // если меньше:
+      if (x1 <= 0 || x2 <= 0) {
+        // прячем вычисления:
+        error = true;
+        return alert('Возникла ошибка - ни x₁, ни x₂ не могут быть равны нулю или быть меньше нуля. Пожалуйста, попробуйте ввести данные снова.');
+      };
+    }
+
+    // Проверяем, не равно ли число в таблице нулю либо оно меньше нуля (применяется в цикле)
+    function val(num) {
+      // если меньше:
+      if (num <= 0) {
+        // прячем вычисления:
+        error = true;
+        return alert('Возникла ошибка. Попробуйте ввести данные снова.');
+      }
+    }
+
+    // Подставляем x1, x2 в целевую функцию
+    function res(x1, x2, m) {
+      let o = `<span class=\'label\'>Подставляем значения в целевую функцию <b>${fr.innerText.split(' →')[0]}</b>:</span><br>`;
+      o += `f(x) = ${m[0][3]} * ${Math.round(x1)} + ${m[1][3]} * ${x2}<br>`
+      o += `f(x) = ${m[0][3] * x1} + ${m[1][3] * x2}<br>`
+      rpoi = m[0][3] * x1 + m[1][3] * x2;
+      o += `<b>f(x) = ${rpoi}</b>`
+      o += '<span class=\'label\'><b> (тенге)</b></span><br>';
+      return o;
+    }
+  </script>
+</body>
+
+</html>

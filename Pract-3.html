@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Задача 3</title>
+  <!-- STYLE -->
+  <style>
+    :root {
+      --body-background: #114;
+      --body-foreground: #eee;
+      --body-background-locked: #225;
+      --body-foreground-locked: #ddd;
+      --button-background: #336;
+      --button-background-active: #225;
+      --button-border: #ccc;
+      --system-before: #ccc2;
+      --label: #66a;
+      --table-border: #99f;
+      --good: #6f80ef;
+      --bad: #6c70df;
+      --border-radius: 20px;
+    }
+
+    body,
+    main {
+      margin: 0 auto;
+      max-width: 1000px;
+      background: var(--body-background);
+      color: var(--body-foreground);
+      font-family: 'Bahnschrift', 'JetBrains Mono', Geneva, Verdana, sans-serif;
+      font-size: 18px;
+      height: 100vh;
+    }
+
+    .flex {
+      display: flex;
+    }
+
+    .ai-c {
+      align-items: center;
+    }
+
+    .jc-c {
+      justify-content: center;
+    }
+
+    .dir-col {
+      flex-direction: column;
+    }
+
+    .ta-c {
+      text-align: center;
+    }
+
+    td {
+      vertical-align: middle;
+      text-align: center;
+      min-width: 125px;
+      padding: 6px;
+      border: 1px solid var(--table-border);
+    }
+
+    td:not([contenteditable]) {
+      background: var(--body-background-locked);
+      color: var(--body-foreground-locked);
+    }
+
+    .m-t {
+      margin-top: 30px;
+    }
+
+    .m-l {
+      margin-left: 5px;
+    }
+
+    .m-t-sm {
+      margin-top: 5px;
+    }
+
+    .m-l-large {
+      margin-left: 30px;
+    }
+
+    .m-0-auto {
+      margin: 0 auto;
+    }
+
+    .full-w {
+      width: 100vw;
+    }
+
+    table,
+    input[type=text] {
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid #99f;
+      font-family: 'JetBrains Mono';
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #77d;
+      border-radius: 20px;
+      font: inherit;
+      border: none;
+    }
+
+    button:active {
+      background: #44a;
+    }
+
+    #restrictionSystem::before,
+    .restrictionSystem::before {
+      content: '{';
+      position: absolute;
+      margin-top: -10px;
+      margin-left: -24px;
+      font-size: 46px;
+      color: var(--button-background-active);
+    }
+
+    .step__desc {
+      color: #999;
+      font-size: 15px;
+    }
+
+    .lab {
+      color: #606060;
+      font-size: 16px;
+    }
+
+    input {
+      background: inherit;
+      border: 2px solid var(--input-border);
+      text-align: center;
+      color: inherit;
+      min-height: 30px;
+      /* max-width: calc(100% - 100px); */
+      font: inherit;
+    }
+
+    .good,
+    .bad {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .good {
+      color: var(--good);
+    }
+
+    .bad {
+      color: var(--bad);
+    }
+  </style>
+
+</head>
+
+<body>
+  <!-- MAIN CONTENT -->
+  <main class="flex ai-c jc-c dir-col">
+    <!-- Table container -->
+    <div class="flex">
+      <!-- Expenses inputs -->
+      <div class="expenses">
+        <div class="flex jc-c dir-col">
+          <div class="flex dir-col m-t">
+            <label class="label">Длина заготовок 1 вида</label>
+            <input class="m-t-small input-exp1 input-cm" type="text" />
+          </div>
+          <div class="flex dir-col m-t">
+            <label class="label">Длина заготовок 2 вида</label>
+            <input class="m-t-small input-exp2 input-cm" type="text" />
+          </div>
+          <div class="flex dir-col m-t">
+            <label class="label">Всего см в одном прутке</label>
+            <input class="m-t-small input-expa input-cm" type="text" />
+          </div>
+        </div>
+      </div>
+      <!-- Production plan inputs -->
+      <div class="m-l-large plan">
+        <div class="flex ai-c jc-c dir-col">
+          <div class="flex dir-col m-t">
+            <label class="label">План по заг. 1 вида</label>
+            <input class="m-t-small input-plan input-plan1" type="text" />
+          </div>
+          <div class="flex dir-col m-t">
+            <label class="label">План по заг. 2 вида</label>
+            <input class="m-t-small input-plan input-plan2" type="text" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Calculate button -->
+    <div class="m-t jc-c">
+      <button onclick="outputAllTo(elem('.intt'))" id="calculate">Вычислить</button>
+    </div>
+    <!-- inttation -->
+    <section class="intt m-t">
+
+    </section>
+  </main>
+  <!-- SCRIPTS -->
+  <script>
+    let max25, max12, planned25, remainsFrom25, mx12From25Remains, planned12, made12from25rem, remaining12, fullTo12, result12, st = 0,
+      plan25, plan12, cmInFull, length25, length12,
+      units = ["заг", "заг", "пр", "см", "заг", "пр", "заг", "заг", "пр", "пр"], allStrings = ["max25", "max12", "planned25", "remainsFrom25", "mx12From25Remains", "planned12", "made12from25rem", "remaining12", "fullTo12", "result12"];
+
+
+    function elem(name) {
+      return document.querySelector(name);
+    }
+    function elems(name) {
+      return document.querySelectorAll(name);
+    }
+
+    elems('.input-cm').forEach((element) => element.outerHTML = `<div>${element.outerHTML}<label class="label"> (см.)</label></div>`);
+
+    elems('.input-plan').forEach((element) => element.outerHTML = `<div>${element.outerHTML}<label class="label"> (заг.)</label></div>`);
+
+    elems('input').forEach((element) => allowNumbersOnly(element));
+
+    function allowNumbersOnly(inputEl) {
+      inputEl.onkeydown = function (e) {
+        if (!e) e = window.event;
+        var keyCode = e.keyCode || e.which;
+        if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+          if (keyCode >= 48 && keyCode <= 57) {
+            return true;
+          }
+          if (keyCode >= 96 && keyCode <= 105) {
+            return true;
+          }
+          if (keyCode == 8 || keyCode == 46) {
+            return true;
+          }
+          return false;
+        }
+      }
+    }
+
+    function gv() {
+      length25 = elem('.input-exp1').value;
+      length12 = elem('.input-exp2').value;
+      plan25 = elem('.input-plan1').value;
+      plan12 = elem('.input-plan2').value;
+      cmInFull = elem('.input-expa').value;
+    }
+
+    // Serves a double purpose. OutputStep function gets the internal code of this Calc function and then interpolates pre-calculated values into it. Also the comments are used in HTML to explain what is going on.
+    function calc() {
+      // Start of calculation
+      max25 = Math.floor(cmInFull / length25) // Макс. кол-во заготовок length25 см из одного прутка в cmInFull см:
+      max12 = Math.floor(cmInFull / length12) // Макс. кол-во заготовок length12 см из одного прутка в cmInFull см:
+      planned25 = Math.ceil(plan25 / max25) // Надо потратить целых прутков чтобы выполнить план по заготовкам length25 см:
+      remainsFrom25 = cmInFull - (max25 * length25) // Остаток в одном прутке от производства заготовок length25 см:
+      mx12From25Remains = Math.floor(remainsFrom25 / length12) // Макс. кол-во заготовок length12 см из остатка от length25 см (в одном прутке)
+      planned12 = Math.ceil(plan12 / max12) // Надо потратить прутков чтобы выполнить план по length12 см:
+      made12from25rem = planned25 * mx12From25Remains // Кол-во заготовок, сделанных из остатков от производства length25 см:
+      remaining12 = plan12 - planned25 // Кол-во заготовок length12 см, которые ещё осталось выполнить:
+      fullTo12 = Math.ceil(remaining12 / max12) // Кол-во целых прутков, которые будут потрачены на заготовки length12 см:
+      result12 = made12from25rem + fullTo12 // Общее кол-во прутков, чтобы сделать все заготовки length12 и length25 см:
+      // End of calculation
+    }
+
+    function ost(vts) {
+      let eqc = '=';
+      let cwd = document.body.innerHTML.split("// Start of calculation")[1].split("// End of calculation")[0].trim();
+      let ccc = cwd.split(vts)[1].split('// ')[0].replace(' = ', '');
+      let ccd = cwd.split(vts)[1].split('// ')[1].split('\n')[0];
+      if (ccc.match('Math.round')
+        || ccc.match('Math.ceil')
+        || ccc.match('Math.floor')) {
+        ccc = ccc.replaceAll('Math.round(', '').replaceAll('Math.floor(', '').replaceAll('Math.ceil(', '').replaceAll(')', '');
+        eqc = '≈'
+      }
+      return `<div class="m-t-sm step${st}"><span class="step__desc">${ccd}</span><br>${ccc}${eqc} ${vts}<span class="lab"> (${units[st]}.)</span></div>`;
+    }
+
+    function outputAllTo(htmlEl) {
+      st = 0;
+      gv();
+      calc();
+      htmlEl.innerHTML = '';
+      for (; st < allStrings.length; st++) {
+        htmlEl.innerHTML += ost(allStrings[st]);
+      }
+      ipl();
+    }
+
+    // Interpolate all vars in html
+    function ipl() {
+      elem('.intt').innerHTML = elem('.intt').innerHTML
+        .replaceAll("max25", max25)
+        .replaceAll("max12", max12)
+        .replaceAll("planned25", planned25)
+        .replaceAll("remainsFrom25", remainsFrom25)
+        .replaceAll("mx12From25Remains", mx12From25Remains)
+        .replaceAll("planned12", planned12)
+        .replaceAll("made12from25rem", made12from25rem)
+        .replaceAll("remaining12", remaining12)
+        .replaceAll("fullTo12", fullTo12)
+        .replaceAll("result12", result12)
+        .replaceAll("plan25", plan25)
+        .replaceAll("plan12", plan12)
+        .replaceAll("cmInFull", cmInFull)
+        .replaceAll("length25", length25)
+        .replaceAll("length12", length12);
+    }
+  </script>
+
+</html>
