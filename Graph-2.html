@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Задача: график 2</title>
+  <!-- STYLE -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
+
+    :root {
+      --body-background: #114;
+      --body-foreground: #eee;
+      --body-background-locked: #225;
+      --body-foreground-locked: #ddd;
+      --button-background: #336;
+      --button-background-active: #225;
+      --button-border: #ccc;
+      --table-border: #99f;
+      --input-border: #aaf;
+      --system-before: #ccc2;
+      --label: #66a;
+      --good: #6f80ef;
+      --bad: #6c70df;
+      --border-radius: 20px;
+    }
+
+    body,
+    main {
+      margin: 0 auto;
+      background: var(--body-background);
+      color: var(--body-foreground);
+      font-family: 'Bahnschrift', 'JetBrains Mono', Geneva, Verdana, sans-serif;
+      font-size: 18px;
+      height: 100vh;
+    }
+
+    .flex {
+      display: flex;
+    }
+
+    .ai-c {
+      align-items: center;
+    }
+
+    .jc-c {
+      justify-content: center;
+    }
+
+    .dir-col {
+      flex-direction: column;
+    }
+
+    .ta-c {
+      text-align: center;
+    }
+
+    .hide {
+      display: none;
+    }
+
+    table,
+    input[type=text],
+    select,
+    textarea {
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid #99f;
+      font: inherit;
+      font-family: 'JetBrains Mono';
+    }
+
+    select {
+      padding: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #77d;
+      border-radius: 20px;
+      font: inherit;
+      border: none;
+    }
+
+    button:active {
+      background: #44a;
+    }
+
+    input,
+    select,
+    textarea {
+      background: inherit;
+      border: 2px solid var(--input-border);
+      padding: 20px;
+      color: inherit;
+      min-height: 30px;
+    }
+
+    textarea {
+      min-width: 260px;
+      border-radius: 20px 20px 0 20px;
+    }
+
+    .good,
+    .bad {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .good {
+      color: var(--good);
+    }
+
+    .bad {
+      color: var(--bad);
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 14px;
+      color: var(--button-border);
+    }
+
+    .full-wh {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .gap {
+      gap: 20px;
+    }
+    .out {
+      background-color: #fff;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="flex ai-c dir-col jc-c full-wh gap">
+    <div class="in cont flex dir-col gap">
+      <textarea name="" id="" cols="30" rows="10"></textarea>
+      <button id="calc">Вычислить</button>
+    </div>
+    <div class="out cont flex dir-col gap">
+      <canvas id="canvas" width="700" height="700" style="width:700px; height:700px; border:1px solid #d3d3d3;">Graph
+        Test</canvas>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/plotta.js@1.1.1/dist/dev/plotta.min.js"></script>
+  <script>
+    function elem(name) {
+      return document.querySelector(name);
+    }
+
+    function elems(name) {
+      return document.querySelectorAll(name);
+    }
+
+    function get() {
+      const canvas = elem('canvas');
+      const plotta = new Plotta(canvas, {
+        linedatas: newLinedata(parseInput()[1].length),
+        config: {
+          title: {
+            location: 'center',
+            color: '#000',
+            text: 'График ф-ции',
+          },
+          grid: {
+            visible: true,
+            color: '#888888',
+          },
+          border: {
+            visible: true,
+            color: '#99f',
+            width: 1,
+          },
+        },
+      });
+      plotta.SetAxisYLabel('X2');plotta.SetAxisXLabel('X1');
+      plotta.SetAxisYLabelColor(`#99f`);
+      plotta.SetAxisXLabelColor(`#99f`);
+      plotta.SetTicsColor(`#99f`);
+    }
+
+    function parseInput() {
+      let rs = elem('textarea').value.replaceAll(';', '').replaceAll('.', '').split('\n\n');
+      rs[1] = rs[1].split('\n');
+      rs[1].push(rs[2].split(',')[0]);
+      return rs;
+    }
+
+    function newLinedata(iterations) {
+      let arr = [];
+      for (let i = 0; i < iterations; i++) {
+        arr.push({
+          id: `line${i}`,
+          type: 'func',
+          legend: parseInput()[1][i],
+          color: colors[i],
+          visible: true,
+          func: funcs[i],
+          dotNum: 1000
+        })
+      }
+      return arr;
+    }
+
+    let buttonpresses = 0;
+
+    let colors = ['#f00', '#0f0', '#00f', '#f0f', '#f70', '#70f', '#f005', '#0f05', '#00f5', '#f0f5', '#f705'];
+    let funcs = 
+      [[(x1 => -(10 / 3) * x1 + 10), (x1 => x1 + 5), (x1 => 2), (x1 => 10 - x1), (x1 => 0)],
+    ];
+  </script>
+</body>
+
+</html>
+
+
+10x1 + 3x2 = 30
+x2 = 
