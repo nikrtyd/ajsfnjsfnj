@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -30,7 +31,7 @@
     body,
     main {
       margin: 0 auto;
-      max-width: 1000px;
+      max-width: 600px;
       background: var(--body-background);
       color: var(--body-foreground);
       font-family: 'JetBrains Mono', Geneva, Verdana, sans-serif;
@@ -168,7 +169,7 @@
 
 <body>
   <!-- MAIN CONTENT -->
-  <main class="flex ai-c jc-c gap dir-col">
+  <main class="flex jc-c gap dir-col">
     <div class="flex gap">
       <div class="door"></div>
       <!-- Inputs container -->
@@ -194,7 +195,7 @@
     <!-- Calculate and inttation container -->
     <div class="flex dir-col gap">
       <!-- Calculate button -->
-      <div class="flex jc-c">
+      <div class="flex">
         <button onclick="oat(elem('.intt'))" id="calculate">Вычислить</button>
       </div>
       <!-- inttation -->
@@ -206,18 +207,7 @@
     <script>
       let max25, max12, planned25, remainsFrom25, mx12From25Remains, planned12, made12from25rem, remaining12, fullTo12, result12, st = 0,
         _p, _f, _l, _s,
-        _u = ["част", "част", "дос", "м", "част", "дос", "част", "част", "дос", "дос", "дос"], _r = [
-          "Макс. количество _lм частей рамы из одной доски в _fм:",
-          "Макс. количество _sм частей рамы из одной доски в _fм:",
-          "Надо потратить _fм досок, чтобы выполнить план по _lм частям:",
-          "Остаток в одной _fм доске от производства _lм частей:",
-          "Макс. кол-во _sм частей рамы из остатков от _lм частей:",
-          "Надо потратить _fм досок, чтобы выполнить план по _sм частям:",
-          "Кол-во _sм частей, сделанных из остатков от производства _lм частей:",
-          "Кол-во _sм частей, которые еще осталось выполнить:",
-          "Кол-во целых _fм досок, которые будут потрачены на _sм части:",
-          "Кол-во целых _fм досок, чтобы сделать 1/2 частей _s и _lм:",
-          "Итог. Полное кол-во досок:"];
+        _u = ["част", "част", "дос", "м", "част", "дос", "част", "част", "дос", "дос", "дос"];
       let _a = ["max25", "max12", "planned25", "remainsFrom25", "mx12From25Remains", "planned12", "made12from25rem", "remaining12", "fullTo12", "result12", "real"];
 
       function elem(name) {
@@ -253,13 +243,13 @@
       }
 
       function oat(htmlEl) {
-        htmlEl.innerHTML = '<span class="lab m-b">На одну дверную раму нужно 2 части по _lм и 2 части по _sм.<br>Сначала вычислим затраты на половину каждой дверной рамы, и потом умножим на 2.</span>';
         st = 0;
         gv();
         calc();
         for (; st < _a.length; st++) {
           htmlEl.innerHTML += ost(_a[st]);
         }
+        htmlEl.innerHTML += `Итого надо целых досок: ${real} шт.`
         ipl();
       }
 
@@ -287,7 +277,7 @@
           ccc = ccc.replaceAll('Math.round(', '').replaceAll('Math.floor(', '').replaceAll('Math.ceil(', '').replaceAll(')', '');
           eqc = '≈'
         }
-        return `<span class="lab">${_r[st]}</span><div class="m-t-sm step${st}">${ccc}${eqc} ${vts}<span class="lab"> (${_u[st]}.)</span></div>`;
+        return `<div class="m-t-sm step${st}">${ccc}${eqc} ${vts}<span class="lab"> (${_u[st]}.)</span></div>`;
       }
 
 

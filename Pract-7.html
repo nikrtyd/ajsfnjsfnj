@@ -206,41 +206,35 @@
           <tr>
             <td>Вид ёмкости</td>
             <td>Затраты cтали (м)</td>
+            <td>План - не менее (шт.)</td>
             <td>Прибыль (тенге)</td>
+            <td>Следует изготовить</td>
           </tr>
           <tr>
             <td>Тип 1</td>
             <td contenteditable="true"></td>
             <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+            <td class="fw-b"></td>
           </tr>
           <tr>
             <td>Тип 2</td>
             <td contenteditable="true"></td>
             <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+            <td class="fw-b"></td>
           </tr>
           <tr>
             <td>Имеется</td>
             <td contenteditable="true"></td>
             <td class="fw-b"></td>
+            <td class="fw-b"></td>
+            <td class="fw-b"></td>
           </tr>
         </tbody>
       </table>
-      <!-- Production plan inputs -->
-      <div class="m-l-large plan">
-        <div class="flex ai-c jc-c gap m-t">
-          <div class="flex dir-col">
-            <label class="label">План по ёмкостям 1 типа</label>
-            <input class="m-t-small input-plan1" type="text" />
-          </div>
-          <div class="flex dir-col">
-            <label class="label">План по ёмкостям 2 типа</label>
-            <input class="m-t-small input-plan2" type="text" />
-          </div>
-        </div>
-      </div>
-    </div>
     <!-- Calculate button -->
-    <div class="m-t flex jc-c">
+    <div class="m-t flex">
       <button onclick="get(newm(mainTable))" id="calculate">Вычислить</button>
     </div>
     <!-- inttation -->
@@ -305,22 +299,27 @@
       }
 
       function get(m) {
-        p1 = parseInt(document.querySelector('.input-plan1').value);
-        p2 = parseInt(document.querySelector('.input-plan2').value);
-        document.querySelector('.intt').style.visibility = 'visible';
-        document.querySelector('.intt__function').innerHTML = `f(x) = ${m[0][1]}x₁ + ${m[1][1]}x₂ → <i>max</i>`;
-        document.querySelector('.intt__restr').innerHTML = `${m[0][0]}x₁ + ${m[1][0]}x₂ ≤ ${m[2][0]}<label>, при x₁ ≥ ${p1}; x₂ ≥ ${p2}</label>`;
+        p1 = m[0][1];
+        p2 = m[1][1];
+        elem('.intt').style.visibility = 'visible';
+        elem('.intt__function').innerHTML = `f(x) = ${m[0][2]}x₁ + ${m[1][2]}x₂ → <i>max</i>`;
+        elem('.intt__restr').innerHTML = `${m[0][0]}x₁ + ${m[1][0]}x₂ ≤ ${m[2][0]}<label>, при x₁ ≥ ${p1}; x₂ ≥ ${p2}</label>`;
         let results = prof(m);
-        document.querySelector('.intt__calc').innerHTML = `x₁ = ${results[1]}<label> (шт.) - кол-во ёмкостей 1 типа</label><br>x₂ = ${results[2]}<label> (шт.) - кол-во ёмкостей 2 типа</label>`;
+        elem('.intt__calc').innerHTML = `x₁ = ${results[1]}<label> (шт.) - кол-во ёмкостей 1 типа</label><br>x₂ = ${results[2]}<label> (шт.) - кол-во ёмкостей 2 типа</label>`;
         if (p1 * m[0][0] + p2 * m[1][0] > m[2][0]) {
-          document.querySelector('.intt__ver').innerHTML = `<span class="var(--bad) fs-i">ПЛАН НЕДОСТИЖИМ!!! ВАМ НУЖНО ${p1 * m[0][0] + p2 * m[1][0]} М СТАЛИ, ЧТОБЫ ЕГО ВЫПОЛНИТЬ!</span>`;
-          document.querySelector('.intt__profit').innerHTML = '';
+          elem('.intt__ver').innerHTML = `<span class="var(--bad) fs-i">ПЛАН НЕДОСТИЖИМ!!! ВАМ НУЖНО ${p1 * m[0][0] + p2 * m[1][0]} М СТАЛИ, ЧТОБЫ ЕГО ВЫПОЛНИТЬ!</span>`;
+          elem('.intt__profit').innerHTML = '';
           mainTable.rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].innerText = 'НЕДОСТИЖИМО';
           return;
         }
-        document.querySelector('.intt__ver').innerHTML = `${m[0][0]} * ${results[1]} + ${m[1][0]} * ${results[2]} = ${m[0][0] * results[1] + m[1][0] * results[2]}` + (((m[0][0] * results[1] + m[1][0] * results[2]) <= m[2][0]) ? `<span class="good"> ≤ ${m[2][0]}</span>` : `<span class="bad">, больше ${m[2][0]}</span>`);
-        document.querySelector('.intt__profit').innerHTML = `f(x) = ${m[0][1]} * ${results[1]} + ${m[1][1]} * ${results[2]} = ${m[0][1] * results[1] + m[1][1] * results[2]}<label> (тенге) - максимальная достижимая прибыль</label>`;
-        mainTable.rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].innerText = results[0];
+        elem('.intt__ver').innerHTML = `${m[0][0]} * ${results[1]} + ${m[1][0]} * ${results[2]} = ${m[0][0] * results[1] + m[1][0] * results[2]}` + (((m[0][0] * results[1] + m[1][0] * results[2]) <= m[2][0]) ? `<span class="good"> ≤ ${m[2][0]}</span>` : `<span class="bad">, больше ${m[2][0]}</span>`);
+        elem('.intt__profit').innerHTML = `f(x) = ${m[0][2]} * ${results[1]} + ${m[1][2]} * ${results[2]} = ${m[0][2] * results[1] + m[1][2] * results[2]}<label> (тенге) - максимальная достижимая прибыль</label>`;
+        
+        mainTable.rows[3].cells[2].innerText = parseInt(m[0][1]) + parseInt(m[1][1]);
+        mainTable.rows[3].cells[3].innerText = results[0];
+        mainTable.rows[1].cells[4].innerText = results[1];
+        mainTable.rows[2].cells[4].innerText = results[2];
+        mainTable.rows[3].cells[4].innerText = results[1] + results[2];
       }
 
       function prof(m) {
@@ -328,7 +327,7 @@
         for (let t1c = p1; t1c < 999; t1c++) {
           for (let t2c = p2; t2c < 999; t2c++) {
             let steelSurplus = m[2][0] - (m[0][0] * t1c) - (m[1][0] * t2c);   // остаток стали
-            let newProfit = (t1c * m[0][1] + t2c * m[1][1]);
+            let newProfit = (t1c * m[0][2] + t2c * m[1][2]);
             if (steelSurplus < 0) continue; // остаток не может быть меньше 0
             if (newProfit > maxProfit) {
               maxProfit = newProfit;

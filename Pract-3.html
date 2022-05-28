@@ -193,6 +193,10 @@
             <label class="label">План по заг. 2 вида</label>
             <input class="m-t-small input-plan input-plan2" type="text" />
           </div>
+          <div class="flex dir-col m-t">
+            <label class="label">Итог</label>
+            <input readonly class="m-t-small input-plan input-plan3" type="text" />
+          </div>
         </div>
       </div>
     </div>
@@ -251,8 +255,6 @@
       plan12 = elem('.input-plan2').value;
       cmInFull = elem('.input-expa').value;
     }
-
-    // Serves a double purpose. OutputStep function gets the internal code of this Calc function and then interpolates pre-calculated values into it. Also the comments are used in HTML to explain what is going on.
     function calc() {
       // Start of calculation
       max25 = Math.floor(cmInFull / length25) // Макс. кол-во заготовок length25 см из одного прутка в cmInFull см:
@@ -270,16 +272,15 @@
 
     function ost(vts) {
       let eqc = '=';
-      let cwd = document.body.innerHTML.split("// Start of calculation")[1].split("// End of calculation")[0].trim();
-      let ccc = cwd.split(vts)[1].split('// ')[0].replace(' = ', '');
-      let ccd = cwd.split(vts)[1].split('// ')[1].split('\n')[0];
+      let cwd = document.body.innerHTML.split("function calc() {")[1].split("}function ost")[0].trim();
+      let ccc = cwd.split(vts)[1].split(',')[0].replace('=', '');
       if (ccc.match('Math.round')
         || ccc.match('Math.ceil')
         || ccc.match('Math.floor')) {
         ccc = ccc.replaceAll('Math.round(', '').replaceAll('Math.floor(', '').replaceAll('Math.ceil(', '').replaceAll(')', '');
         eqc = '≈'
       }
-      return `<div class="m-t-sm step${st}"><span class="step__desc">${ccd}</span><br>${ccc}${eqc} ${vts}<span class="lab"> (${units[st]}.)</span></div>`;
+      return `<div class="m-t-sm step${st}">${ccc}${eqc} ${vts}<span class="lab"> (${units[st]}.)</span></div>`;
     }
 
     function outputAllTo(htmlEl) {
@@ -290,6 +291,7 @@
       for (; st < allStrings.length; st++) {
         htmlEl.innerHTML += ost(allStrings[st]);
       }
+      elem('.input-plan3').value = result12;
       ipl();
     }
 

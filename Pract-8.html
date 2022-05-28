@@ -28,7 +28,7 @@
     body,
     main {
       margin: 0 auto;
-      max-width: 1000px;
+      max-width: 760px;
       background: var(--body-background);
       color: var(--body-foreground);
       font-family: 'Bahnschrift', 'JetBrains Mono', Geneva, Verdana, sans-serif;
@@ -231,7 +231,7 @@
             <td contenteditable="true"></td>
           </tr>
           <tr>
-            <td>Должно сверх плана поступить</td>
+            <td>Всего</td>
             <td contenteditable="true"></td>
             <td contenteditable="true"></td>
             <td contenteditable="true"></td>
@@ -361,21 +361,6 @@
         }
         return [maxp, mx1, mx2, mx3];
       }
-
-      // remove this
-      let arint =
-        ["2", "5", "0", "20",
-          "3", "0", "4", "40",
-          "2", "2", "3", "38",
-          "800", "1800", "1240"]
-      let idx = 0;
-      for (let rowI = 2; rowI < mainTable.rows.length; rowI++) {
-        for (let cellI = 1; cellI < mainTable.rows[rowI].cells.length; cellI++) {
-          elem('table').rows[rowI].cells[cellI].innerText = arint[idx];
-          idx++;
-        }
-      }
-      run(newm(mainTable));
     </script>
 </body>
 
