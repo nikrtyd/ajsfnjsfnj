@@ -131,6 +131,7 @@
     .gap {
       gap: 20px;
     }
+
     .out {
       background-color: #fff;
     }
@@ -142,16 +143,19 @@
   <div class="flex ai-c dir-col jc-c full-wh gap">
     <div class="in cont flex dir-col gap">
       <textarea name="" id="" cols="30" rows="10"></textarea>
-      <button id="calc">Вычислить</button>
+      <button onclick="get()" id="calc">Вычислить</button>
     </div>
     <div class="out cont flex dir-col gap">
-      <canvas id="canvas" width="700" height="700" style="width:700px; height:700px; border:1px solid #d3d3d3;">Graph
+      <canvas id="canvas" width="500" height="500" style="width:500px; height:500px; border:1px solid #d3d3d3;">Graph
         Test</canvas>
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/plotta.js@1.1.1/dist/dev/plotta.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/algebra.js/0.2.3/algebra.js" integrity="sha512-6lYnaXxV7SCjRXACDDfNod7K610C8CkFbFlnxa3ZowVEbdWlnnJ5rvP9zWenwOhPBY+N3VqW/3SL0/mS4YJYlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/algebra.js/0.2.3/algebra.js"
+    integrity="sha512-6lYnaXxV7SCjRXACDDfNod7K610C8CkFbFlnxa3ZowVEbdWlnnJ5rvP9zWenwOhPBY+N3VqW/3SL0/mS4YJYlQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
+    let colors = ['#f00', '#0f0', '#00f', '#f0f', '#f70', '#70f', '#f005', '#0f05', '#00f5', '#f0f5', '#f705'];
     function elem(name) {
       return document.querySelector(name);
     }
@@ -181,7 +185,7 @@
           },
         },
       });
-      plotta.SetAxisYLabel('X2');plotta.SetAxisXLabel('X1');
+      plotta.SetAxisYLabel('X2'); plotta.SetAxisXLabel('X1');
       plotta.SetAxisYLabelColor(`#99f`);
       plotta.SetAxisXLabelColor(`#99f`);
       plotta.SetTicsColor(`#99f`);
@@ -190,7 +194,6 @@
     function parseInput() {
       let rs = elem('textarea').value.replaceAll(';', '').replaceAll('.', '').split('\n\n');
       rs[1] = rs[1].split('\n');
-      rs[1].push(rs[2].split(',')[0]);
       return rs;
     }
 
@@ -203,19 +206,26 @@
           legend: parseInput()[1][i],
           color: colors[i],
           visible: true,
-          func: funcs[i],
+          func: new Function('y',`return (${multSign(algebra.parse(parseInput()[1][i].replace('>=', '=').replace('<=', '=').replace('x1', 'y').replace('x2', 'z').replace('-y','0-y').replace('-z','0-z')).solveFor('z').toString())});`),
           dotNum: 1000
         })
       }
       return arr;
     }
 
-    let buttonpresses = 0;
-
-    let colors = ['#f00', '#0f0', '#00f', '#f0f', '#f70', '#70f', '#f005', '#0f05', '#00f5', '#f0f5', '#f705'];
-    let funcs = 
-      [[(x1 => -(10 / 3) * x1 + 10), (x1 => x1 + 5), (x1 => 2), (x1 => 10 - x1), (x1 => 0)],
-    ];
+    // add multiplication signs, for example: 3x turn to 3*x
+    function multSign(val) {
+      let str = val,
+        matches = val.match(/[0-9]\y/g),
+        mrep = [];
+      if (matches) {
+        for (let i = 0; i < matches.length; i++) {
+          mrep[i] = matches[i][0] + "*" + matches[i][1];
+          str = str.replace(matches[i], mrep[i]);
+        }
+      }
+      return str;
+    }
   </script>
 </body>
 
