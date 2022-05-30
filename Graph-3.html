@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Задача: график 2</title>
+  <title>Задача: график 3</title>
   <!-- STYLE -->
   <style>
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
@@ -199,20 +199,19 @@
 
       let _ = parseInput(true);
       let __ = _[1];
-      let _q = prof(_[0][0],_[0][1],__[0][0],__[0][1],__[0][2],__[1][0],__[1][1],__[1][2],__[2][0],__[2][1],__[2][2],__[3][0],__[3][1],__[3][2]);
+      let _q = prof(_[0][0],_[0][1],__[0][0],__[0][1],__[0][2],__[1][0],__[1][1],__[1][2],__[2][0],__[2][1],__[2][2]);
       elem('._x').innerText = `x1 = ${_q[1]}; x2 = ${_q[2]}; f(x) = ${_q[0]}`;
     }
 
-    function prof(f0, f1, o00, o01, o02, o10, o11, o12, o20, o21, o22, o30, o31, o32) {
+    function prof(f0, f1, o00, o01, o02, o10, o11, o12, o20, o21, o22) {
       let maxp = 0, mx1 = 0, mx2 = 0;
       for (let t1c = 0; t1c < 400; t1c++) {
         for (let t2c = 0; t2c < 400; t2c++) {
           let s1 = (o00 * t1c) + (o01 * t2c);
           let s2 = (o10 * t1c) + (o11 * t2c);
           let s3 = (o20 * t1c) + (o21 * t2c);
-          let s4 = (o30 * t1c) + (o31 * t2c);
           let newp = (t1c * f0 + t2c * f1); // 1 - from f(x) var0, 3 - var1
-          if (s1 < o02 || s2 > o12 || s3 < o22 || s4 > o32) continue; // остаток не может быть меньше 0
+          if (s1 > o02 || s2 < o12 || s3 > o22) continue; // остаток не может быть меньше 0
           if (newp > maxp) {
             maxp = newp;
             mx1 = t1c;
