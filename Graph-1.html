@@ -49,13 +49,20 @@
       justify-content: center;
     }
 
+    table td {
+      text-align: center;
+      padding: 5px 10px;
+    }
+
     .dir-col {
       flex-direction: column;
     }
 
-    .ta-c {
-      text-align: center;
+    td:not([contenteditable]) {
+      background: var(--body-background-locked);
+      color: var(--body-foreground-locked);
     }
+
 
     .hide {
       display: none;
@@ -70,6 +77,7 @@
       border: 1px solid #99f;
       font: inherit;
       font-family: 'JetBrains Mono';
+      max-width: 670px;
     }
 
     select {
@@ -117,6 +125,12 @@
       color: var(--bad);
     }
 
+    ._x {
+      text-align: center;
+      color: #000;
+      margin-bottom: 10px;
+    }
+
     label {
       font-weight: bold;
       font-size: 14px;
@@ -131,176 +145,220 @@
     .gap {
       gap: 20px;
     }
+
+    .out {
+      background-color: #fff;
+    }
   </style>
 
 </head>
 
 <body>
   <div class="flex ai-c dir-col jc-c full-wh gap">
+
+    <table cellspacing="0" cellpadding="0" border="1">
+      <tbody>
+        <tr>
+          <td rowspan="2">Виды кормов</td>
+          <td colspan="3">Содержание в 1 кг кормов</td>
+          <td rowspan="2">Стоимость 1 кг в тенге</td>
+        </tr>
+        <tr>
+          <td>Кормовых единиц</td>
+          <td>Белка</td>
+          <td>Кальция</td>
+        </tr>
+        <tr>
+          <td>Сено</td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+        </tr>
+        <tr>
+          <td>Концентраты</td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+        </tr>
+        <tr>
+          <td>Суточная потребность</td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td class="fw-b"></td>
+        </tr>
+      </tbody>
+    </table>
     <div class="in cont flex dir-col gap">
-      <textarea name="" id="" cols="30" rows="10"></textarea>
-      <button id="calc">Вычислить</button>
+      <button onclick="tta()" id="calc">Вычислить</button>
+      <textarea name="" id="" cols="30" rows="10" readonly></textarea>
     </div>
     <div class="out cont flex dir-col gap">
-      <canvas id="myChart"></canvas>
+      <canvas id="canvas" width="500" height="500" style="width:500px; height:500px; border:1px solid #d3d3d3;">Graph
+        Test</canvas>
+      <span class="_x"></span>
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/plotta.js@1.1.1/dist/dev/plotta.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/algebra.js/0.2.3/algebra.js"
+    integrity="sha512-6lYnaXxV7SCjRXACDDfNod7K610C8CkFbFlnxa3ZowVEbdWlnnJ5rvP9zWenwOhPBY+N3VqW/3SL0/mS4YJYlQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
-
-
-
-
+    let colors = ['#f00', '#0f0', '#00f', '#f0f', '#f70', '#70f', '#f005', '#0f05', '#00f5', '#f0f5', '#f705'];
     function elem(name) {
       return document.querySelector(name);
     }
+
     function elems(name) {
       return document.querySelectorAll(name);
     }
-    // Задаём переменные, чтобы записывать туда наши действия
-    // let mainTable = elem('table'),
-    //   min1 = 0,
-    //   min2 = 0;
 
-    // numbers only for all cells in table
-    // for (let i = 0; i < mainTable.rows.length; i++) {
-    //   for (let j = 0; j < mainTable.rows[i].cells.length; j++) {
-    //     mainTable.rows[i].cells[j].onkeydown = NumbersOnly;
-    //   }
-    // }
-
-    // numbers only for all inputs
-    elems('input').forEach((element) => element.onkeydown = nums);
-
-    function nums(e) {
-      if (!e) e = window.event;
-      var keyCode = e.keyCode || e.which;
-      if (!e.ctrlKey && !e.metaKey && !e.altKey) {
-        if (keyCode >= 48 && keyCode <= 57) {
-          return true;
-        }
-        if (keyCode >= 96 && keyCode <= 105) {
-          return true;
-        }
-        if (keyCode == 8 || keyCode == 46 || keyCode == 9 || keyCode == 45) {
-          return true;
-        }
-        return false;
-      }
-    }
-
-    // Получаем матрицу из таблицы
     function newm(t) {
-      const m = [,];
+      const matrix = [,];
       // не берем в расчет левый и верхний края таблицы, отсюда начинается матрица: i (ряд) = 2; j (столб.) = 1
       for (let i = 2; i < t.rows.length; i++) {
         let rowData = [];
-        for (let j = 1; j < t.rows[i].cells.length; j++) {
-          let cell = t.rows[i].cells[j];
-          val(cell);
+        for (let j = 1; j < t.rows[i].cells.length; j++)
           rowData.push(parseFloat(t.rows[i].cells[j].innerText));
-        }
-        m[i - 2] = rowData;
+        matrix[i - 2] = rowData;
       }
-      return m;
+      return matrix;
     }
 
-    // если нет данных, то присваиваем нулю
-    function val(el) {
-      if (!(el.innerText.match(/\d/)))
-        el.innerText = 0;
+    // Выводим целевую функцию из матрицы
+    function gtf(m) {
+      return `f(x) = ${m[0][3]}x1 + ${m[1][3]}x2 -> min`;
     }
 
-    function get(m) {
-      min1 = 20;
-      min2 = 20;
-      min3 = 20;
-      elem('.intt').style.visibility = 'visible';
-      elem('.intt__function').innerHTML = `f(x) = ${m[0][3]}x₁ + ${m[1][3]}x₂ + ${m[2][3]}x₃ → <i>max</i>`;
-      elem('.intt__restr>.system').innerHTML = `${m[0][0]}x₁ + ${m[1][0]}x₂ + ${m[2][0]}x₃ ≤ ${m[3][0]}<br>${m[0][1]}x₁ + ${m[1][1]}x₂ + ${m[2][1]}x₃ ≤ ${m[3][1]}<br>${m[0][2]}x₁ + ${m[1][2]}x₂ + ${m[2][2]}x₃ ≤ ${m[3][2]}`; // <label>, при x₁ ≥ ${min1}; x₂ ≥ ${min2}; x₃ ≥ ${min3}</label>
-      let r = prof(m);
-      elem('.intt__calc').innerHTML = `x₁ = ${r[1]}<label> (шт.) - кол-во изделий 1 вида</label><br>x₂ = ${r[2]}<label> (шт.) - кол-во изделий 2 вида</label><br>x₃ = ${r[3]}<label> (шт.) - кол-во изделий 3 вида</label>`;
-      if (min1 * m[0][0] + min2 * m[1][0] + min3 * m[2][0] > m[3][0]) {
-        elem('.intt__ver').innerHTML = `<span class="var(--bad) fs-i">ПЛАН НЕДОСТИЖИМ!!! ВАМ НУЖНО ${min1 * m[0][0] + min2 * m[1][0]} М СТАЛИ, ЧТОБЫ ЕГО ВЫПОЛНИТЬ!</span>`;
-        elem('.intt__profit').innerHTML = '';
-        mainTable.rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].innerText = 'НЕДОСТИЖИМО';
-        return;
+    // Выводим систему ограничений для S1, S2 и S3 соответственно
+    function grs(m) {
+      let o = '';
+      for (let i = 0; i < m.length; i++) {
+        let restriction = `${m[0][i]}x1 + ${m[1][i]}x2 >= ${m[2][i]}`;
+        o += `${restriction}\n`;
       }
-      elem('.intt__ver').innerHTML = `<div class="system">${m[0][0]} * ${r[1]} + ${m[1][0]} * ${r[2]} + ${m[2][0]} * ${r[3]} = ${m[0][0] * r[1] + m[1][0] * r[2] + m[2][0] * r[3]}` + (((m[0][0] * r[1] + m[1][0] * r[2]) <= m[3][0]) ? `<span class="good"> ≤ ${m[3][0]}</span>` : `<span class="bad">, больше ${m[3][0]}</span>`)
-        + `<br>${m[0][1]} * ${r[1]} + ${m[1][1]} * ${r[2]} + ${m[2][1]} * ${r[3]} = ${m[0][1] * r[1] + m[1][1] * r[2] + m[2][1] * r[3]}` + (((m[0][1] * r[1] + m[1][1] * r[2] + m[2][1] * r[3]) <= m[3][1]) ? `<span class="good"> ≤ ${m[3][1]}</span>` : `<span class="bad">, больше ${m[3][1]}</span>`)
-        + `<br>${m[0][2]} * ${r[1]} + ${m[1][2]} * ${r[2]} + ${m[2][2]} * ${r[3]} = ${m[0][2] * r[1] + m[1][2] * r[2] + m[2][2] * r[3]}` + (((m[0][2] * r[1] + m[1][2] * r[2] + m[2][2] * r[3]) <= m[3][2]) ? `<span class="good"> ≤ ${m[3][2]}</span>` : `<span class="bad">, больше ${m[3][2]}</span>`) + '</div>';
-      elem('.intt__profit').innerHTML = `f(x) = ${m[0][3]} * ${r[1]} + ${m[1][3]} * ${r[2]} + ${m[2][3]} * ${r[3]} = ${m[0][3] * r[1] + m[1][3] * r[2] + m[2][3] * r[3]}<label> (тенге) - максимальная достижимая прибыль</label>`;
-      mainTable.rows[mainTable.rows.length - 1].cells[mainTable.rows[mainTable.rows.length - 1].cells.length - 1].innerText = r[0];
+      return o;
     }
+    let mainTable = elem('table');
 
-    function prof(m) {
-      let maxProfit = 0, maxOfType1 = 0, maxOfType2 = 0, maxOfType3 = 0;
-      for (let t1c = 20; t1c < 400; t1c++) {
-        for (let t3c = 20; t3c < 400; t3c++) {
-          for (let t2c = 20; t2c < 400; t2c++) {
-            let cementSurplus = m[3][0] - (m[0][0] * t1c) - (m[1][0] * t2c) - (m[2][0] * t3c);   // остаток цемента
-            let sandSurplus = m[3][1] - (m[0][1] * t1c) - (m[1][1] * t2c) - (m[2][1] * t3c);   // остаток песка
-            let rubbleSurplus = m[3][2] - (m[0][2] * t1c) - (m[1][2] * t2c) - (m[2][2] * t3c);   // остаток щебня
-            let newProfit = (t1c * m[0][3] + t2c * m[1][3] + t3c * m[2][3]);
-            if (cementSurplus < 0 || sandSurplus < 0 || rubbleSurplus < 0) continue; // остаток не может быть меньше 0
-            if (newProfit > maxProfit) {
-              maxProfit = newProfit;
-              maxOfType1 = t1c;
-              maxOfType2 = t2c;
-              maxOfType3 = t3c;
+    // Для всех редактируемых ячеек таблицы, разрешим ввод только цифр
+    for (let i = 0; i < mainTable.rows.length; i++) {
+      for (let j = 0; j < mainTable.rows[i].cells.length; j++) {
+        mainTable.rows[i].cells[j].onkeydown = function (e) {
+          if (!e) e = window.event;
+          var keyCode = e.keyCode || e.which;
+          if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+            if (keyCode >= 48 && keyCode <= 57) {
+              return true;
             }
+            if (keyCode >= 96 && keyCode <= 105) {
+              return true;
+            }
+            if (keyCode == 8 || keyCode == 46) {
+              return true;
+            }
+            return false;
           }
         }
       }
-      return [maxProfit, maxOfType1, maxOfType2, maxOfType3];
     }
 
-    // // place one sibling input-sys if there is a value in the first input-sys and no sibling input-sys
-    // function placeOneSiblingInputSys(inputSys) {
-    //   if (inputSys.value) {
-    //     let siblingInputSys = inputSys.nextElementSibling;
-    //     if (!siblingInputSys) {
-    //       siblingInputSys = document.createElement('input');
-    //       siblingInputSys.className = 'input-sys';
-    //       siblingInputSys.type = 'number';
-    //       siblingInputSys.min = 0;
-    //       siblingInputSys.max = 100;
-    //       siblingInputSys.step = 1;
-    //       siblingInputSys.value = 0;
-    //       siblingInputSys.addEventListener('input', () => placeOneSiblingInputSys(input));
-    //       inputSys.parentNode.append(siblingInputSys);
-    //     }
-    //   }
-    // }
 
-    // elems('.input-sys').forEach(input => {
-    //   input.addEventListener('input', () => {
-    //     placeOneSiblingInputSys(input);
-    //   });
-    // });
-
-
-
-    // remove this
-    let suka =
-      ["2", "5", "0", "20",
-        "3", "0", "4", "40",
-        "2", "2", "3", "38",
-        "800", "1800", "1240"]
-    let lol = 0;
-    for (let rowI = 2; rowI < mainTable.rows.length; rowI++) {
-      for (let cellI = 1; cellI < mainTable.rows[rowI].cells.length; cellI++) {
-        elem('table').rows[rowI].cells[cellI].innerText = suka[lol];
-        lol++;
+    function prof(m) {
+      let minp = 440, mx1 = 440, mx2 = 440;
+      for (let t1c = 440; t1c > 0; t1c--) {
+        for (let t2c = 400; t2c > 0; t2c--) {
+          let csp = (m[0][0] * t1c) + (m[1][0] * t2c) - m[2][0];   // остаток цемента
+          let ssp = (m[0][1] * t1c) + (m[1][1] * t2c) - m[2][1];   // остаток песка
+          let rsp = (m[0][2] * t1c) + (m[1][2] * t2c) - m[2][2];   // остаток щебня
+          let newp = (t1c * m[0][3] + t2c * m[1][3]);
+          if (csp < 0 || ssp < 0 || rsp < 0) continue; // остаток не может быть меньше 0
+          if (newp < minp) {
+            minp = newp;
+            mx1 = t1c;
+            mx2 = t2c;
+          }
+        }
       }
+      return [minp, mx1, mx2];
     }
-    get(newm(mainTable));
 
-// f(x) = 20x1 + 40x2 + 38x3 -> max
-  // 2x1 + 3x2 + 2x3 <= 800
-  // 5x1 + 0x2 + 2x3 <= 1800
-  // 0x1 + 4x2 + 3x3 <= 1240
+    // to text area
+    function tta() {
+      let m = newm(elem('table'));
+      elem('textarea').value = (`${gtf(m)}\n\n${grs(m)}\nx1 >= 0, x2 >= 0`).replaceAll(' 1x',' x');
+      let _q = prof(m);
+      elem('._x').innerText = `x1 = ${_q[1]}; x2 = ${_q[2]}; f(x) = ${_q[0]}`;
+      elem('._x').innerText += `\nТ.е. потребуется ${_q[1]} кг сена и ${_q[2]} кг концентратов.\nИтоговые затраты: ${_q[0]}`;
+      mainTable.rows[4].cells[4].innerText=_q[0];
+      get();
+    }
 
+    function get() {
+      const canvas = elem('canvas');
+      const plotta = new Plotta(canvas, {
+        linedatas: newLinedata(parseInput()[1].length),
+        config: {
+          title: {
+            location: 'center',
+            color: '#000',
+            text: 'График ф-ции',
+          },
+          grid: {
+            visible: true,
+            color: '#888888',
+          },
+          border: {
+            visible: true,
+            color: '#99f',
+            width: 1,
+          },
+        },
+      });
+      plotta.SetAxisYLabel('X2'); plotta.SetAxisXLabel('X1');
+      plotta.SetAxisYLabelColor(`#99f`);
+      plotta.SetAxisXLabelColor(`#99f`);
+      plotta.SetTicsColor(`#99f`);
+    }
+
+    function parseInput() {
+      let rs = elem('textarea').value.replaceAll(';', '').split('\n\n');
+      rs[1] = rs[1].split('\n');
+      // rs[1].push(rs[2].split(', ')[1]); 
+      return rs;
+    }
+
+    function newLinedata(iterations) {
+      let arr = [];
+      for (let i = 0; i < iterations; i++) {
+        arr.push({
+          id: `line${i}`,
+          type: 'func',
+          legend: parseInput()[1][i],
+          color: colors[i],
+          visible: true,
+          func: new Function('y', `return (${multSign(algebra.parse(parseInput()[1][i].replace('>=', '=').replace('<=', '=').replace('x1', 'y').replace('x2', 'z').replace('-y', '0-y').replace('-z', '0-z')).solveFor('z').toString())});`),
+          dotNum: 1000
+        })
+      }
+      return arr;
+    }
+
+    // add multiplication signs, for example: 3x turn to 3*x
+    function multSign(val) {
+      let str = val,
+        matches = val.match(/[0-9]\y/g),
+        mrep = [];
+      if (matches) {
+        for (let i = 0; i < matches.length; i++) {
+          mrep[i] = matches[i][0] + "*" + matches[i][1];
+          str = str.replace(matches[i], mrep[i]);
+        }
+      }
+      return str;
+    }
   </script>
 </body>
 

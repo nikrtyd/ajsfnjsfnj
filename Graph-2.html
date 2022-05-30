@@ -192,8 +192,9 @@
     }
 
     function parseInput() {
-      let rs = elem('textarea').value.replaceAll(';', '').replaceAll('.', '').split('\n\n');
+      let rs = elem('textarea').value.replaceAll(';', '').split('\n\n');
       rs[1] = rs[1].split('\n');
+      // rs[1].push(rs[2].split(', ')[1]); 
       return rs;
     }
 
