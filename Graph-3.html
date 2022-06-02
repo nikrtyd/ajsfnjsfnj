@@ -8,23 +8,22 @@
   <title>Задача: график 3</title>
   <!-- STYLE -->
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
 
     :root {
-      --body-background: #114;
-      --body-foreground: #eee;
-      --body-background-locked: #225;
-      --body-foreground-locked: #ddd;
-      --button-background: #336;
-      --button-background-active: #225;
-      --button-border: #ccc;
-      --table-border: #99f;
-      --input-border: #aaf;
+      --body-background: #ff9;
+      --body-foreground: #000;
+      --body-background-locked: rgb(242, 197, 48);
+      --body-foreground-locked: #663;
+      --button-background: rgb(224, 197, 48);
+      --button-background-active: rgb(165, 142, 12);
+      --button-border: #555;
+      --table-border: #663;
+      --input-border: #663;
       --system-before: #ccc2;
       --label: #66a;
       --good: #6f80ef;
       --bad: #6c70df;
-      --border-radius: 20px;
     }
 
     body,
@@ -32,7 +31,7 @@
       margin: 0 auto;
       background: var(--body-background);
       color: var(--body-foreground);
-      font-family: 'Bahnschrift', 'JetBrains Mono', Geneva, Verdana, sans-serif;
+      font-family: 'Calibri', 'Fira Code', Geneva, Verdana, sans-serif;
       font-size: 18px;
       height: 100vh;
     }
@@ -65,11 +64,11 @@
     input[type=text],
     select,
     textarea {
-      border-radius: 20px;
+      
       overflow: hidden;
-      border: 1px solid #99f;
+      border: 1px solid #663;
       font: inherit;
-      font-family: 'JetBrains Mono';
+      font-family: 'Fira Code';
     }
 
     select {
@@ -78,14 +77,14 @@
 
     button {
       padding: 10px 20px;
-      background: #77d;
-      border-radius: 20px;
+      background: rgb(224,197,48);
+      
       font: inherit;
       border: none;
     }
 
     button:active {
-      background: #44a;
+      background: rgb(165, 142, 12);
     }
 
     input,
@@ -100,7 +99,7 @@
 
     textarea {
       min-width: 260px;
-      border-radius: 20px 20px 0 20px;
+      
     }
 
     .good,
@@ -187,15 +186,15 @@
           },
           border: {
             visible: true,
-            color: '#99f',
+            color: '#663',
             width: 1,
           },
         },
       });
       plotta.SetAxisYLabel('X2'); plotta.SetAxisXLabel('X1');
-      plotta.SetAxisYLabelColor(`#99f`);
-      plotta.SetAxisXLabelColor(`#99f`);
-      plotta.SetTicsColor(`#99f`);
+      plotta.SetAxisYLabelColor(`#663`);
+      plotta.SetAxisXLabelColor(`#663`);
+      plotta.SetTicsColor(`#663`);
 
       let _ = parseInput(true);
       let __ = _[1];
